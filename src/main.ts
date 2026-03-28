@@ -14,6 +14,7 @@ import {
   IntroScene, TransitionScene, EscapeScene, ContinueDialog,
   Puzzle1Scene, Puzzle2Scene, Puzzle3Scene, Puzzle4Scene, Puzzle5Scene,
   Puzzle6Scene, Puzzle7Scene, Puzzle8Scene, Puzzle9Scene, Puzzle10Scene,
+  setGameState,
 } from './rooms/room1/index';
 import { TRANSITIONS } from './rooms/room1/puzzles';
 
@@ -62,6 +63,7 @@ async function showTransition(text: string, nextId: string): Promise<void> {
 
 function onPuzzleSolved(puzzleId: string): void {
   completedPuzzles.push(puzzleId);
+  updateGameState();
   const idx = PUZZLE_ORDER.indexOf(puzzleId);
   const next = getNextPuzzle(completedPuzzles);
 
@@ -91,6 +93,13 @@ function startFresh(): void {
   sceneManager.transition('intro');
 }
 
+function updateGameState(): void {
+  setGameState({
+    completedPuzzles,
+    goToPuzzle: (id: string) => sceneManager.transition(id),
+  });
+}
+
 function registerScenes(): void {
   const intro = new IntroScene(() => {
     audioManager.init();
@@ -116,6 +125,7 @@ function registerScenes(): void {
 
 function init(): void {
   registerScenes();
+  updateGameState();
   const saved = SaveManager.load();
 
   if (saved && saved.currentScene !== 'intro') {
@@ -133,6 +143,7 @@ function init(): void {
     const dialog = new ContinueDialog(count + 1, timeStr, () => {
       completedPuzzles = saved.completedPuzzles;
       gameStartedAt = saved.startedAt;
+      updateGameState();
       audioManager.init();
       audioManager.playAmbient('/ambient.mp3');
       timer.start();

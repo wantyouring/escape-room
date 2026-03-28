@@ -21,11 +21,81 @@ import {
   P10_HASHES, P10_GRID,
 } from './puzzles';
 
+/** 게임 상태 참조 (main.ts에서 주입) */
+export interface GameState {
+  completedPuzzles: string[];
+  goToPuzzle: (puzzleId: string) => void;
+}
+
+let gameState: GameState | null = null;
+
+export function setGameState(state: GameState): void {
+  gameState = state;
+}
+
+const PUZZLE_NAMES = [
+  '찢어진 쪽지', '거울 문장', '초성 퀴즈', '수열 완성', '책장 암호',
+  '그림자 세기', '암호 해독표', '좌표 그리드', '모스 부호', '규칙 찾기',
+];
+
+function showPuzzleMenu(): void {
+  if (!gameState) return;
+  const existing = document.querySelector('.puzzle-menu-overlay');
+  if (existing) { existing.remove(); return; }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'puzzle-menu-overlay';
+
+  const menu = document.createElement('div');
+  menu.className = 'puzzle-menu';
+  menu.innerHTML = '<div class="puzzle-menu-title">문제 목록</div>';
+
+  for (let i = 0; i < 10; i++) {
+    const id = `puzzle-${i + 1}`;
+    const solved = gameState.completedPuzzles.includes(id);
+    const item = document.createElement('div');
+    item.className = `puzzle-menu-item ${solved ? 'solved' : 'locked'}`;
+    item.innerHTML = `
+      <span class="menu-num">${i + 1}</span>
+      <span class="menu-name">${PUZZLE_NAMES[i]}</span>
+      <span class="menu-status">${solved ? '✓' : ''}</span>
+    `;
+    if (solved) {
+      item.addEventListener('click', () => {
+        overlay.remove();
+        gameState!.goToPuzzle(id);
+      });
+    }
+    menu.appendChild(item);
+  }
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'puzzle-menu-close';
+  closeBtn.textContent = '닫기';
+  closeBtn.addEventListener('click', () => overlay.remove());
+  menu.appendChild(closeBtn);
+
+  overlay.appendChild(menu);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('app')?.appendChild(overlay);
+}
+
 // Helper: 공통 퍼즐 화면 래퍼 생성
 function createPuzzleWrapper(num: number, total: number, timer: Timer): HTMLElement {
   const wrapper = document.createElement('div');
   wrapper.className = 'puzzle-screen';
-  wrapper.innerHTML = `<div class="puzzle-num">${num} / ${total}</div>`;
+
+  const header = document.createElement('div');
+  header.className = 'puzzle-header';
+  header.innerHTML = `<div class="puzzle-num">${num} / ${total}</div>`;
+
+  const menuBtn = document.createElement('button');
+  menuBtn.className = 'puzzle-menu-btn';
+  menuBtn.textContent = '≡';
+  menuBtn.addEventListener('click', showPuzzleMenu);
+  header.appendChild(menuBtn);
+
+  wrapper.appendChild(header);
   wrapper.appendChild(timer.getElement());
   return wrapper;
 }

@@ -20,8 +20,8 @@ export const P1_HIDDEN_WORDS = [
 // ── 퍼즐 2: 거울 문장 ────────────────────────────────
 // 좌우반전 텍스트 → "열쇠"
 export const P2_HASHES = ['5bebbcbf30ba30c059711d17fc3423424437ca5b7b755209b6f45a5feee773e3'];
-// "답은 열쇠" 를 음절 단위로 뒤집으면 "쇠열 은답"
-export const P2_MIRROR_TEXT = '쇠열 은 답';
+// CSS scaleX(-1)로 뒤집힘 → 거울에 비추면 "답은 열쇠"로 읽힘
+export const P2_MIRROR_TEXT = '답은 열쇠';
 
 // ── 퍼즐 3: 초성 퀴즈 ────────────────────────────────
 // ㅌ ㅊ + 힌트 → "탈출"
