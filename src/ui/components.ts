@@ -43,7 +43,8 @@ export function createCodeInput(
 export function createTextInput(
   placeholder: string,
   hint: string,
-  onSubmit: (value: string) => void
+  onSubmit: (value: string) => void,
+  maxLength = 10
 ): HTMLElement {
   const wrapper = document.createElement('div');
   wrapper.className = 'word-input-area';
@@ -51,7 +52,7 @@ export function createTextInput(
   const input = document.createElement('input');
   input.className = 'word-input';
   input.type = 'text';
-  input.maxLength = 3;
+  input.maxLength = maxLength;
   input.placeholder = placeholder;
   input.autocomplete = 'off';
 
