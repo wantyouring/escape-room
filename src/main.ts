@@ -94,8 +94,10 @@ function startFresh(): void {
 }
 
 function updateGameState(): void {
+  const next = getNextPuzzle(completedPuzzles);
   setGameState({
     completedPuzzles,
+    currentPuzzle: next ?? '',
     goToPuzzle: (id: string) => sceneManager.transition(id),
   });
 }

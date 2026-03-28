@@ -24,6 +24,7 @@ import {
 /** 게임 상태 참조 (main.ts에서 주입) */
 export interface GameState {
   completedPuzzles: string[];
+  currentPuzzle: string;
   goToPuzzle: (puzzleId: string) => void;
 }
 
@@ -38,46 +39,52 @@ const PUZZLE_NAMES = [
   '그림자 세기', '암호 해독표', '좌표 그리드', '모스 부호', '규칙 찾기',
 ];
 
-function showPuzzleMenu(): void {
+function toggleDropdown(anchor: HTMLElement): void {
   if (!gameState) return;
-  const existing = document.querySelector('.puzzle-menu-overlay');
+  const existing = document.querySelector('.puzzle-dropdown');
   if (existing) { existing.remove(); return; }
 
-  const overlay = document.createElement('div');
-  overlay.className = 'puzzle-menu-overlay';
-
-  const menu = document.createElement('div');
-  menu.className = 'puzzle-menu';
-  menu.innerHTML = '<div class="puzzle-menu-title">문제 목록</div>';
+  const dropdown = document.createElement('div');
+  dropdown.className = 'puzzle-dropdown';
 
   for (let i = 0; i < 10; i++) {
     const id = `puzzle-${i + 1}`;
     const solved = gameState.completedPuzzles.includes(id);
+    const isCurrent = gameState.currentPuzzle === id;
+    const accessible = solved || isCurrent;
+
     const item = document.createElement('div');
-    item.className = `puzzle-menu-item ${solved ? 'solved' : 'locked'}`;
+    item.className = `dropdown-item${solved ? ' solved' : ''}${isCurrent ? ' current' : ''}${!accessible ? ' locked' : ''}`;
     item.innerHTML = `
-      <span class="menu-num">${i + 1}</span>
-      <span class="menu-name">${PUZZLE_NAMES[i]}</span>
-      <span class="menu-status">${solved ? '✓' : ''}</span>
+      <span class="dropdown-num">${i + 1}</span>
+      <span class="dropdown-name">${PUZZLE_NAMES[i]}</span>
+      <span class="dropdown-status">${solved ? '✓' : isCurrent ? '→' : ''}</span>
     `;
-    if (solved) {
+    if (accessible) {
       item.addEventListener('click', () => {
-        overlay.remove();
+        dropdown.remove();
         gameState!.goToPuzzle(id);
       });
     }
-    menu.appendChild(item);
+    dropdown.appendChild(item);
   }
 
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'puzzle-menu-close';
-  closeBtn.textContent = '닫기';
-  closeBtn.addEventListener('click', () => overlay.remove());
-  menu.appendChild(closeBtn);
+  // Position below anchor
+  const rect = anchor.getBoundingClientRect();
+  const app = document.getElementById('app')!;
+  const appRect = app.getBoundingClientRect();
+  dropdown.style.top = `${rect.bottom - appRect.top + 4}px`;
+  dropdown.style.left = `${rect.left - appRect.left}px`;
+  app.appendChild(dropdown);
 
-  overlay.appendChild(menu);
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
-  document.getElementById('app')?.appendChild(overlay);
+  // Close on outside click
+  const close = (e: MouseEvent) => {
+    if (!dropdown.contains(e.target as Node) && e.target !== anchor) {
+      dropdown.remove();
+      document.removeEventListener('click', close);
+    }
+  };
+  setTimeout(() => document.addEventListener('click', close), 0);
 }
 
 // Helper: 공통 퍼즐 화면 래퍼 생성
@@ -85,17 +92,12 @@ function createPuzzleWrapper(num: number, total: number, timer: Timer): HTMLElem
   const wrapper = document.createElement('div');
   wrapper.className = 'puzzle-screen';
 
-  const header = document.createElement('div');
-  header.className = 'puzzle-header';
-  header.innerHTML = `<div class="puzzle-num">${num} / ${total}</div>`;
+  const numBtn = document.createElement('button');
+  numBtn.className = 'puzzle-num-btn';
+  numBtn.innerHTML = `${num} / ${total} <span class="dropdown-arrow">▼</span>`;
+  numBtn.addEventListener('click', () => toggleDropdown(numBtn));
 
-  const menuBtn = document.createElement('button');
-  menuBtn.className = 'puzzle-menu-btn';
-  menuBtn.textContent = '≡';
-  menuBtn.addEventListener('click', showPuzzleMenu);
-  header.appendChild(menuBtn);
-
-  wrapper.appendChild(header);
+  wrapper.appendChild(numBtn);
   wrapper.appendChild(timer.getElement());
   return wrapper;
 }
