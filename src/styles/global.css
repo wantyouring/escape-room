@@ -1,0 +1,193 @@
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-surface: #111111;
+  --bg-surface-hover: #1a1a1a;
+  --text-primary: #c8c8c8;
+  --text-secondary: #666666;
+  --text-muted: #333333;
+  --accent-amber: #d4a017;
+  --accent-glow: rgba(212, 160, 23, 0.4);
+  --clue-hidden: #2a2a4e;
+  --clue-found: #6a6aae;
+  --error: #8b2020;
+
+  --transition-fast: 0.15s ease-out;
+  --transition-normal: 0.3s ease-out;
+  --transition-scene: 0.5s ease-in-out;
+  --transition-story: 0.8s ease-in;
+  --typewriter-speed: 40ms;
+
+  --font-story: 'Noto Serif KR', Georgia, serif;
+  --font-ui: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background: #050505;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-story);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  max-width: 420px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: var(--bg-primary);
+  position: relative;
+  overflow: hidden;
+  transition: opacity var(--transition-scene);
+}
+
+/* Grain overlay */
+#app::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 100;
+  will-change: opacity;
+}
+
+/* Timer */
+.timer {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-ui);
+  z-index: 10;
+}
+
+/* Puzzle number */
+.puzzle-num {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-ui);
+}
+
+/* Code input */
+.code-input-area {
+  text-align: center;
+  margin-top: 64px;
+}
+
+.code-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--text-muted);
+  color: var(--accent-amber);
+  font-size: 32px;
+  font-family: var(--font-ui);
+  width: 160px;
+  text-align: center;
+  letter-spacing: 16px;
+  padding: 8px;
+  outline: none;
+  caret-color: var(--accent-amber);
+}
+
+.code-input::placeholder { color: #1a1a1a; }
+
+.code-label {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-family: var(--font-ui);
+  margin-top: 12px;
+  letter-spacing: 2px;
+}
+
+/* Word input */
+.word-input-area {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.word-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--text-muted);
+  color: var(--accent-amber);
+  font-size: 28px;
+  font-family: var(--font-story);
+  width: 80px;
+  text-align: center;
+  padding: 8px;
+  outline: none;
+  caret-color: var(--accent-amber);
+}
+
+.word-hint {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-family: var(--font-ui);
+  margin-top: 8px;
+}
+
+/* Wrong answer feedback */
+.wrong-msg {
+  color: var(--error);
+  font-size: 12px;
+  font-family: var(--font-ui);
+  margin-top: 8px;
+  animation: fade-out 0.5s ease-out forwards;
+}
+
+/* Orientation warning */
+.orientation-warning {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg-primary);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-family: var(--font-ui);
+  text-align: center;
+  padding: 24px;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .orientation-warning { display: flex; }
+}
+
+/* Screen flash (iOS haptic alternative) */
+.screen-flash {
+  position: fixed;
+  inset: 0;
+  background: rgba(212, 160, 23, 0.15);
+  z-index: 99;
+  pointer-events: none;
+  animation: flash-out 0.1s ease-out forwards;
+}
+
+@keyframes flash-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

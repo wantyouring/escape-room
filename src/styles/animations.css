@@ -1,0 +1,86 @@
+/* Shake animation (wrong answer) */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.shake {
+  animation: shake 0.4s ease-out;
+}
+
+/* Pulse (hidden clue nudge) */
+@keyframes pulse-glow {
+  0%, 100% { text-shadow: none; }
+  50% { text-shadow: 0 0 12px rgba(100, 100, 200, 0.8); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 1s ease-in-out;
+}
+
+/* Fade in */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fade-in var(--transition-scene) ease-in;
+}
+
+/* Fade out */
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Slow pulse for intro text */
+@keyframes slow-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* Flicker (intro clue) */
+@keyframes flicker {
+  0%, 93%, 96%, 100% { opacity: 0; }
+  94%, 95% { opacity: 0.7; }
+}
+
+/* Book flip */
+.book-flip {
+  transition: transform 0.6s ease-in-out;
+  transform-style: preserve-3d;
+}
+
+.book-flip.flipped {
+  transform: rotateY(180deg);
+}
+
+/* Lock rattle */
+@keyframes rattle {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-3deg); }
+  40% { transform: rotate(3deg); }
+  60% { transform: rotate(-2deg); }
+  80% { transform: rotate(2deg); }
+}
+
+.rattle {
+  animation: rattle 0.4s ease-out;
+}
+
+/* Escape crack */
+@keyframes crack-open {
+  0% { width: 2px; opacity: 0; }
+  50% { width: 2px; opacity: 0.8; }
+  100% { width: 100%; opacity: 1; }
+}
+
+/* Typewriter cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

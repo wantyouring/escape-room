@@ -1,0 +1,719 @@
+/* ============================================================
+   INTRO
+   ============================================================ */
+.intro-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  background: #050505;
+  cursor: pointer;
+  position: relative;
+}
+
+.intro-tap-text {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-family: var(--font-ui);
+  letter-spacing: 4px;
+  animation: slow-pulse 3s ease-in-out infinite;
+}
+
+.flicker-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--accent-amber);
+  font-size: 64px;
+  font-weight: bold;
+  font-family: var(--font-ui);
+  opacity: 0;
+  animation: flicker 10s ease-in-out infinite;
+  letter-spacing: 12px;
+  pointer-events: none;
+}
+
+/* ============================================================
+   PUZZLE SCREENS (shared)
+   ============================================================ */
+.puzzle-screen {
+  padding: 60px 24px 40px;
+  min-height: 100dvh;
+  position: relative;
+}
+
+/* ============================================================
+   PUZZLE 1 — TORN NOTE
+   ============================================================ */
+.torn-note {
+  margin: 60px auto 0;
+  max-width: 300px;
+  padding: 32px 24px;
+  background: var(--bg-surface);
+  border: 1px solid #1a1a1a;
+  position: relative;
+  transform: rotate(-1deg);
+}
+
+.torn-note::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(135deg, transparent, transparent 4px, var(--bg-primary) 4px, var(--bg-primary) 8px);
+}
+
+.torn-note::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(45deg, transparent, transparent 4px, var(--bg-primary) 4px, var(--bg-primary) 8px);
+}
+
+.note-text {
+  font-size: 16px;
+  line-height: 2.2;
+  color: var(--text-secondary);
+  font-family: var(--font-story);
+  word-break: keep-all;
+}
+
+.hidden-char {
+  color: var(--clue-hidden);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hidden-char.found {
+  color: var(--clue-found);
+  text-shadow: 0 0 8px rgba(100, 100, 200, 0.6);
+}
+
+.note-corner-hint {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 8px;
+  color: #1a1a1a;
+  font-family: var(--font-ui);
+}
+
+/* ============================================================
+   PUZZLE 2 — BOOKSHELF
+   ============================================================ */
+.bookshelf {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 48px auto 0;
+  max-width: 320px;
+}
+
+.book {
+  height: 140px;
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  perspective: 600px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.book-front, .book-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: transform 0.6s ease-in-out;
+}
+
+.book-front {
+  transform: rotateY(0deg);
+}
+
+.book-back {
+  transform: rotateY(180deg);
+  background: var(--bg-surface);
+  border: 1px solid #1a1a1a;
+}
+
+.book.flipped .book-front { transform: rotateY(180deg); }
+.book.flipped .book-back { transform: rotateY(0deg); }
+
+.book-title {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 2px;
+  font-family: var(--font-story);
+}
+
+.book-symbol {
+  font-size: 28px;
+  color: var(--accent-amber);
+  font-family: var(--font-story);
+}
+
+/* Book colors */
+.book-red .book-front { background: linear-gradient(180deg, #2a1111, #1a0808); border: 1px solid #331111; }
+.book-blue .book-front { background: linear-gradient(180deg, #111122, #080818); border: 1px solid #112233; }
+.book-green .book-front { background: linear-gradient(180deg, #112211, #081808); border: 1px solid #113311; }
+.book-brown .book-front { background: linear-gradient(180deg, #1a1510, #100e08); border: 1px solid #2a2010; }
+.book-dark .book-front { background: linear-gradient(180deg, #141414, #0e0e0e); border: 1px solid #1a1a1a; }
+
+/* ============================================================
+   PUZZLE 3 — COMBINATION LOCK
+   ============================================================ */
+.lock-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;
+}
+
+.lock-body {
+  margin-top: 80px;
+  width: 240px;
+  height: 280px;
+  background: var(--bg-surface);
+  border: 2px solid #222;
+  border-radius: 8px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-shackle {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 70px;
+  border: 3px solid #333;
+  border-bottom: none;
+  border-radius: 50px 50px 0 0;
+}
+
+.wheels-container {
+  display: flex;
+  gap: 16px;
+}
+
+.wheel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.wheel-display {
+  width: 56px;
+  height: 56px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: var(--accent-amber);
+  font-family: var(--font-ui);
+  user-select: none;
+}
+
+.wheel-btn {
+  width: 56px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: color var(--transition-fast);
+}
+
+.wheel-btn:active {
+  color: var(--accent-amber);
+}
+
+.lock-submit {
+  margin-top: 32px;
+  padding: 12px 48px;
+  background: transparent;
+  border: 1px solid var(--accent-amber);
+  color: var(--accent-amber);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lock-submit:active {
+  background: rgba(212, 160, 23, 0.1);
+}
+
+.replay-hint {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #1a1a1a;
+  opacity: 0.15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================================
+   TRANSITION
+   ============================================================ */
+.transition-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 24px;
+}
+
+.transition-text {
+  font-family: var(--font-story);
+  font-size: 18px;
+  color: var(--accent-amber);
+  text-shadow: 0 0 20px var(--accent-glow);
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ============================================================
+   ESCAPE
+   ============================================================ */
+.escape-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  position: relative;
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a1508 40%, #2a2010 70%, #3a3018 100%);
+}
+
+.crack {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent 0%, var(--accent-amber) 20%, #fff 50%, var(--accent-amber) 80%, transparent 100%);
+  opacity: 0.5;
+  transform: translateX(-50%);
+  animation: fade-in 1s ease-in;
+}
+
+.escape-content {
+  text-align: center;
+  z-index: 1;
+  animation: fade-in 1.5s ease-in;
+}
+
+.escape-text {
+  font-size: 28px;
+  color: var(--accent-amber);
+  font-family: var(--font-story);
+  letter-spacing: 8px;
+  margin-bottom: 16px;
+  text-shadow: 0 0 30px var(--accent-glow);
+}
+
+.escape-time {
+  font-size: 48px;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  letter-spacing: 4px;
+}
+
+.escape-subtext {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 24px;
+  letter-spacing: 2px;
+  font-family: var(--font-ui);
+}
+
+.escape-actions {
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.share-btn {
+  padding: 14px 32px;
+  background: transparent;
+  border: 1px solid var(--accent-amber);
+  color: var(--accent-amber);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.retry-btn {
+  padding: 14px 32px;
+  background: transparent;
+  border: 1px solid var(--text-muted);
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================================
+   SHARED PUZZLE ELEMENTS
+   ============================================================ */
+.puzzle-description {
+  font-family: var(--font-story);
+  font-size: 15px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 40px;
+  line-height: 1.8;
+}
+
+.puzzle-sub-hint {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 16px;
+}
+
+/* ============================================================
+   PUZZLE 2 — MIRROR TEXT
+   ============================================================ */
+.mirror-frame {
+  margin: 48px auto 0;
+  max-width: 280px;
+  padding: 40px 24px;
+  background: linear-gradient(135deg, #0d0d12, #0a0a0e);
+  border: 2px solid #222;
+  border-radius: 4px;
+  text-align: center;
+  position: relative;
+  box-shadow: inset 0 0 30px rgba(100, 100, 200, 0.03);
+}
+
+.mirror-text {
+  font-family: var(--font-story);
+  font-size: 24px;
+  color: var(--text-secondary);
+  letter-spacing: 8px;
+  transform: scaleX(-1);
+  user-select: none;
+}
+
+/* ============================================================
+   PUZZLE 3 — CONSONANTS
+   ============================================================ */
+.consonant-display {
+  font-family: var(--font-story);
+  font-size: 56px;
+  color: var(--accent-amber);
+  text-align: center;
+  letter-spacing: 24px;
+  margin-top: 64px;
+  text-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ============================================================
+   PUZZLE 4 — SEQUENCE
+   ============================================================ */
+.sequence-display {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 64px;
+  flex-wrap: wrap;
+}
+
+.seq-num {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  border: 1px solid #222;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.seq-blank {
+  color: var(--accent-amber);
+  border-color: var(--accent-amber);
+  border-style: dashed;
+  font-size: 28px;
+}
+
+/* ============================================================
+   PUZZLE 6 — STAR FIELD
+   ============================================================ */
+.star-field {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  margin-top: 32px;
+  background: #060608;
+  border: 1px solid #111;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  font-size: 18px;
+  color: rgba(212, 160, 23, 0.5);
+  user-select: none;
+  animation: slow-pulse 4s ease-in-out infinite;
+}
+
+.star:nth-child(odd) { animation-delay: -1.5s; }
+.star:nth-child(3n) { font-size: 14px; color: rgba(212, 160, 23, 0.35); }
+
+/* ============================================================
+   PUZZLE 7 — CIPHER TABLE
+   ============================================================ */
+.cipher-display {
+  font-family: var(--font-ui);
+  font-size: 36px;
+  color: var(--accent-amber);
+  text-align: center;
+  letter-spacing: 8px;
+  margin-top: 48px;
+  text-shadow: 0 0 12px var(--accent-glow);
+}
+
+.cipher-table {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin: 24px auto 0;
+  max-width: 320px;
+}
+
+.cipher-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 2px;
+  background: var(--bg-surface);
+  border: 1px solid #1a1a1a;
+  border-radius: 2px;
+}
+
+.cipher-key {
+  font-family: var(--font-story);
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.cipher-val {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   PUZZLE 8 — COORDINATE GRID
+   ============================================================ */
+.coord-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin: 32px auto 0;
+  max-width: 280px;
+}
+
+.grid-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  border: 1px solid #1a1a1a;
+  font-family: var(--font-story);
+  font-size: 16px;
+  color: var(--text-secondary);
+  border-radius: 2px;
+}
+
+.coord-hint {
+  font-size: 14px;
+  color: var(--accent-amber);
+  margin-top: 24px;
+}
+
+/* ============================================================
+   PUZZLE 9 — MORSE CODE
+   ============================================================ */
+.morse-display {
+  margin: 40px auto 0;
+  max-width: 280px;
+  text-align: center;
+}
+
+.morse-line {
+  font-family: var(--font-ui);
+  font-size: 28px;
+  color: var(--accent-amber);
+  letter-spacing: 6px;
+  margin-bottom: 16px;
+  text-shadow: 0 0 12px var(--accent-glow);
+}
+
+.morse-ref {
+  margin: 24px auto 0;
+  max-width: 320px;
+  padding: 16px;
+  background: var(--bg-surface);
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+}
+
+.morse-ref-title {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+.morse-ref-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 8px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+
+.morse-ref-digit { color: var(--text-primary); }
+.morse-ref-code { color: var(--text-secondary); letter-spacing: 2px; }
+
+/* ============================================================
+   PUZZLE 10 — PATTERN GRID
+   ============================================================ */
+.pattern-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 48px auto 0;
+  max-width: 240px;
+}
+
+.pattern-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  border: 1px solid #222;
+  border-radius: 4px;
+  font-family: var(--font-story);
+  font-size: 28px;
+  color: var(--text-primary);
+}
+
+.pattern-blank {
+  color: var(--accent-amber);
+  border-color: var(--accent-amber);
+  border-style: dashed;
+  font-size: 32px;
+  font-family: var(--font-ui);
+}
+
+/* ============================================================
+   CONTINUE DIALOG
+   ============================================================ */
+.continue-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 24px;
+}
+
+.continue-dialog {
+  text-align: center;
+}
+
+.continue-title {
+  font-family: var(--font-story);
+  font-size: 18px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.continue-info {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+
+.continue-btn {
+  display: block;
+  width: 200px;
+  margin: 0 auto 16px;
+  padding: 14px 24px;
+  background: transparent;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.continue-btn-primary {
+  border: 1px solid var(--accent-amber);
+  color: var(--accent-amber);
+}
+
+.continue-btn-secondary {
+  border: 1px solid var(--text-muted);
+  color: var(--text-secondary);
+}
