@@ -49,12 +49,15 @@ export function createTextInput(
   const wrapper = document.createElement('div');
   wrapper.className = 'word-input-area';
 
+  const charCount = placeholder.length;
   const input = document.createElement('input');
   input.className = 'word-input';
   input.type = 'text';
   input.maxLength = maxLength;
   input.placeholder = placeholder;
   input.autocomplete = 'off';
+  // 글자수에 맞게 너비 조정 (1자=60px, 2자=100px, 3자+=140px)
+  input.style.width = `${Math.max(60, charCount * 48 + 12)}px`;
 
   const hintEl = document.createElement('div');
   hintEl.className = 'word-hint';

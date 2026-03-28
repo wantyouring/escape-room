@@ -125,7 +125,7 @@ export class Puzzle2Scene implements Scene {
     hint.textContent = '거울에 비친 글자는 뒤집혀 보입니다';
     w.appendChild(hint);
 
-    const input = createTextInput('__', '거울 속 단어를 입력하세요', async (v) => {
+    const input = createTextInput('○○', '거울 속 단어를 입력하세요 (2글자)', async (v) => {
       if (await verifyAnswer(v, P2_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     });
@@ -162,7 +162,7 @@ export class Puzzle3Scene implements Scene {
     ctx.textContent = `힌트: ${P3_CONTEXT}`;
     w.appendChild(ctx);
 
-    const input = createTextInput('__', '완성된 단어를 입력하세요', async (v) => {
+    const input = createTextInput('○○', '완성된 단어를 입력하세요 (2글자)', async (v) => {
       if (await verifyAnswer(v, P3_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     });
@@ -250,7 +250,7 @@ export class Puzzle5Scene implements Scene {
     colorHint.textContent = `색상 순서: ${P5_COLOR_HINT}`;
     w.appendChild(colorHint);
 
-    const input = createTextInput('_', '조합된 글자를 입력하세요', async (v) => {
+    const input = createTextInput('○', '조합된 글자를 입력하세요 (1글자)', async (v) => {
       if (await verifyAnswer(v, P5_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     });
@@ -338,7 +338,7 @@ export class Puzzle7Scene implements Scene {
     hint.textContent = P7_TABLE_HINT;
     w.appendChild(hint);
 
-    const input = createTextInput('__', '해독된 단어를 입력하세요', async (v) => {
+    const input = createTextInput('○○', '해독된 단어를 입력하세요 (2글자)', async (v) => {
       if (await verifyAnswer(v, P7_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     });
@@ -384,7 +384,7 @@ export class Puzzle8Scene implements Scene {
     coordHint.textContent = `좌표: ${P8_COORD_TEXT}`;
     w.appendChild(coordHint);
 
-    const input = createTextInput('_', '해당 좌표의 글자를 입력하세요', async (v) => {
+    const input = createTextInput('○', '해당 좌표의 글자를 입력하세요 (1글자)', async (v) => {
       if (await verifyAnswer(v, P8_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     });
@@ -486,7 +486,7 @@ export class Puzzle10Scene implements Scene {
     hint.textContent = '가로와 세로, 각각 어떤 규칙이 있을까요?';
     w.appendChild(hint);
 
-    const input = createTextInput('_', '빈칸에 들어갈 글자를 입력하세요', async (v) => {
+    const input = createTextInput('○', '빈칸에 들어갈 글자를 입력하세요 (1글자)', async (v) => {
       if (await verifyAnswer(v, P10_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     });
