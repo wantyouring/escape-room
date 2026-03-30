@@ -36,7 +36,7 @@ export function setGameState(state: GameState): void {
 
 const PUZZLE_NAMES = [
   '학자의 일기', '카드 암호', '방향 암호', '숨겨진 패턴', '책장',
-  '삽입 암호', '7세그먼트', '카드 연결', '심장박동', '마지막 편지',
+  '삽입 암호', '디지털 표시판', '카드 연결', '심장박동', '마지막 편지',
 ];
 
 function toggleDropdown(anchor: HTMLElement): void {
