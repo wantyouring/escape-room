@@ -10,11 +10,11 @@ import {
 } from '../../ui/components';
 import {
   P1_HASHES, P1_NOTE, P1_HIDDEN_WORDS,
-  P2_HASHES, P2_GRID,
+  P2_HASHES, P2_WORDS,
   P3_HASHES, P3_ROWS,
   P4_HASHES, P4_EXAMPLES, P4_QUESTIONS,
   P5_HASHES, P5_MEMO, P5_BOOKS,
-  P6_HASHES, P6_DICE_FACES,
+  P6_HASHES, P6_CLOCKS,
   P7_HASHES, P7_DISPLAY, P7_HINT_TEXT,
   P8_HASHES, P8_CARDS,
   P9_HASHES, P9_MORSE_GROUPS, P9_REF,
@@ -35,8 +35,8 @@ export function setGameState(state: GameState): void {
 }
 
 const PUZZLE_NAMES = [
-  '찢어진 쪽지', '거울 문장', '초성 퀴즈', '수열 완성', '책장 암호',
-  '그림자 세기', '암호 해독표', '좌표 그리드', '모스 부호', '규칙 찾기',
+  '학자의 일기', '빠진 글자', '방향 암호', '숨겨진 패턴', '책장',
+  '시계 암호', '7세그먼트', '카드 연결', '심장박동', '마지막 편지',
 ];
 
 function toggleDropdown(anchor: HTMLElement): void {
@@ -181,37 +181,29 @@ export class Puzzle2Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '칠판에 수수께끼 격자가 그려져 있다. 가로·세로·대각선의 합이 모두 같다...';
+    desc.textContent = '낡은 쪽지에 단어 조각들이 있다. 빈칸에 들어갈 글자를 찾아라...';
     w.appendChild(desc);
 
-    const grid = document.createElement('div');
-    grid.className = 'magic-grid';
+    const wordList = document.createElement('div');
+    wordList.className = 'word-fill-list';
 
-    P2_GRID.forEach((row, ri) => {
-      row.forEach((cell, ci) => {
-        const el = document.createElement('div');
-        el.className = `magic-cell${cell === null ? ' magic-blank' : ''}`;
-        if (cell !== null) {
-          el.textContent = String(cell);
-        } else {
-          el.textContent = '?';
-          el.dataset.row = String(ri);
-          el.dataset.col = String(ci);
-        }
-        grid.appendChild(el);
-      });
+    P2_WORDS.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'word-fill-row';
+      row.innerHTML = `<span class="wf-blank">${item.blank}</span><span class="wf-arrow">→</span><span class="wf-hint">?</span>`;
+      wordList.appendChild(row);
     });
-    w.appendChild(grid);
+    w.appendChild(wordList);
 
     const hint = document.createElement('p');
     hint.className = 'puzzle-sub-hint';
-    hint.textContent = '모든 행·열·대각선의 합은 동일합니다. 네 모서리의 숫자를 순서대로 (왼쪽 위→오른쪽 위→왼쪽 아래→오른쪽 아래)';
+    hint.textContent = '빈칸(□) 글자들을 순서대로 이어 붙이세요 (4글자)';
     w.appendChild(hint);
 
-    const input = createCodeInput(4, async (v) => {
+    const input = createTextInput('○○○○', '4글자를 입력하세요', async (v) => {
       if (await verifyAnswer(v, P2_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
-    });
+    }, 10);
     w.appendChild(input);
     container.appendChild(w);
   }
@@ -390,30 +382,27 @@ export class Puzzle6Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '서재 한쪽에 주사위 네 개가 놓여 있다...';
+    desc.textContent = '벽에 낡은 시계 두 개가 걸려 있다...';
     w.appendChild(desc);
 
-    const rule = document.createElement('p');
-    rule.className = 'puzzle-sub-hint';
-    rule.style.fontSize = '13px';
-    rule.style.color = 'var(--text-secondary)';
-    rule.style.marginTop = '16px';
-    rule.textContent = '표준 주사위: 마주 보는 두 면의 합은 항상 7이다.';
-    w.appendChild(rule);
+    const clockRow = document.createElement('div');
+    clockRow.className = 'clock-row';
 
-    const diceRow = document.createElement('div');
-    diceRow.className = 'dice-row';
-    P6_DICE_FACES.forEach(face => {
-      const die = document.createElement('div');
-      die.className = 'die';
-      die.innerHTML = renderDieFace(face);
-      diceRow.appendChild(die);
+    P6_CLOCKS.forEach((c, i) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'clock-wrap';
+      wrap.innerHTML = buildClock(c.hour, c.minute);
+      const label = document.createElement('div');
+      label.className = 'clock-label';
+      label.textContent = `${i + 1}번`;
+      wrap.appendChild(label);
+      clockRow.appendChild(wrap);
     });
-    w.appendChild(diceRow);
+    w.appendChild(clockRow);
 
     const hint = document.createElement('p');
     hint.className = 'puzzle-sub-hint';
-    hint.textContent = '각 주사위의 반대쪽 면을 순서대로 이어 붙이세요 (4자리)';
+    hint.textContent = '시침과 분침이 가리키는 숫자를 이어 붙이세요 (4자리)';
     w.appendChild(hint);
 
     const input = createCodeInput(4, async (v) => {
@@ -426,23 +415,40 @@ export class Puzzle6Scene implements Scene {
   teardown(): void {}
 }
 
-function renderDieFace(n: number): string {
-  // Dot positions for each number (3x3 grid: positions 1-9, row by row)
-  const dots: Record<number, number[]> = {
-    1: [5],
-    2: [3, 7],
-    3: [3, 5, 7],
-    4: [1, 3, 7, 9],
-    5: [1, 3, 5, 7, 9],
-    6: [1, 3, 4, 6, 7, 9],
-  };
-  const positions = dots[n] || [];
-  let html = '<div class="die-face">';
-  for (let i = 1; i <= 9; i++) {
-    html += `<span class="die-dot ${positions.includes(i) ? 'die-dot-on' : ''}"></span>`;
+function buildClock(hour: number, minute: number): string {
+  const cx = 60, cy = 60, r = 54;
+  // Hour hand angle (includes partial hour from minutes)
+  const hourAngle = ((hour % 12) + minute / 60) * 30 - 90;
+  // Minute hand angle
+  const minAngle = (minute / 60) * 360 - 90;
+
+  const toXY = (angle: number, len: number) => ({
+    x: cx + len * Math.cos(angle * Math.PI / 180),
+    y: cy + len * Math.sin(angle * Math.PI / 180),
+  });
+
+  const hEnd = toXY(hourAngle, 32);
+  const mEnd = toXY(minAngle, 46);
+
+  // Hour tick marks and numbers
+  let ticks = '';
+  let nums = '';
+  for (let i = 1; i <= 12; i++) {
+    const a = (i * 30 - 90) * Math.PI / 180;
+    const x1 = cx + 48 * Math.cos(a), y1 = cy + 48 * Math.sin(a);
+    const x2 = cx + 54 * Math.cos(a), y2 = cy + 54 * Math.sin(a);
+    ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="rgba(200,200,200,0.4)" stroke-width="1.5"/>`;
+    const nx = cx + 38 * Math.cos(a), ny = cy + 38 * Math.sin(a);
+    nums += `<text x="${nx.toFixed(1)}" y="${(ny + 4).toFixed(1)}" text-anchor="middle" font-size="9" fill="rgba(200,200,200,0.5)" font-family="monospace">${i}</text>`;
   }
-  html += '</div>';
-  return html;
+
+  return `<svg width="120" height="120" viewBox="0 0 120 120">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#0a0a10" stroke="rgba(200,200,200,0.2)" stroke-width="2"/>
+    ${ticks}${nums}
+    <line x1="${cx}" y1="${cy}" x2="${hEnd.x.toFixed(1)}" y2="${hEnd.y.toFixed(1)}" stroke="#c8c8c8" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="${cx}" y1="${cy}" x2="${mEnd.x.toFixed(1)}" y2="${mEnd.y.toFixed(1)}" stroke="var(--accent-amber)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="${cx}" cy="${cy}" r="3" fill="#c8c8c8"/>
+  </svg>`;
 }
 
 // ============================================================
@@ -519,7 +525,7 @@ export class Puzzle8Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '책상 위에 카드 네 장이 흩어져 있다. 뒤집어 보면 무언가 나타난다...';
+    desc.textContent = '책상 위에 카드 네 장이 흩어져 있다. 무슨 카드일까..';
     w.appendChild(desc);
 
     // 2x2 flip cards
@@ -576,7 +582,7 @@ export class Puzzle9Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '심전도 모니터가 신호를 보내고 있다. 박동 패턴을 분석하라...';
+    desc.textContent = '심장은 뛰고 있지만, 탈출하지 못하면 그 의미도 사라진다.';
     w.appendChild(desc);
 
     // Heartbeat ECG SVG
@@ -584,15 +590,6 @@ export class Puzzle9Scene implements Scene {
     ecgWrap.className = 'ecg-wrap';
     ecgWrap.innerHTML = buildECG(P9_MORSE_GROUPS);
     w.appendChild(ecgWrap);
-
-    // Legend
-    const legend = document.createElement('div');
-    legend.className = 'ecg-legend';
-    legend.innerHTML = `
-      <span class="ecg-leg-item"><svg width="30" height="20"><polyline points="0,15 5,15 5,4 10,4 10,15 30,15" stroke="var(--accent-amber)" fill="none" stroke-width="2"/></svg> 짧은 박동 = ·</span>
-      <span class="ecg-leg-item"><svg width="40" height="20"><polyline points="0,15 5,15 5,4 20,4 20,15 40,15" stroke="var(--accent-amber)" fill="none" stroke-width="2"/></svg> 긴 박동 = —</span>
-    `;
-    w.appendChild(legend);
 
     // Reference table
     const ref = document.createElement('div');

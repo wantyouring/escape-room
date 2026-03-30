@@ -479,6 +479,72 @@
 }
 
 /* ============================================================
+   PUZZLE 2 — WORD FILL-IN (빠진 글자)
+   ============================================================ */
+.word-fill-list {
+  margin: 36px auto 0;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.word-fill-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--bg-surface);
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+}
+
+.wf-blank {
+  font-family: var(--font-story);
+  font-size: 20px;
+  color: var(--text-primary);
+  letter-spacing: 2px;
+}
+
+.wf-arrow {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.wf-hint {
+  font-family: var(--font-ui);
+  font-size: 18px;
+  color: var(--accent-amber);
+  width: 24px;
+  text-align: center;
+}
+
+/* ============================================================
+   PUZZLE 6 — CLOCK CIPHER
+   ============================================================ */
+.clock-row {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin: 36px auto 0;
+}
+
+.clock-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.clock-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+}
+
+/* ============================================================
    PUZZLE 4 — HIDDEN ROMAN NUMERALS
    ============================================================ */
 .roman-box {

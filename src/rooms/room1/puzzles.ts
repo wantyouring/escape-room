@@ -15,12 +15,14 @@ export const P1_HIDDEN_WORDS = [
   { search: '두', digit: '2' },
 ];
 
-// ── 퍼즐 2: 마방진 ───────────────────────────────────
-export const P2_HASHES = ['3a3a99897cabe3d52773c5dc0aac8aaf0ed23acf5fbefc6addb399f934288a48'];
-export const P2_GRID = [
-  [null, 7, null],
-  [9,    5, 1   ],
-  [null, 3, null],
+// ── 퍼즐 2: 빠진 글자 ───────────────────────────────
+// □교→비(비교), □봉→밀(밀봉), □쇠→열(열쇠), □퇴→쇠(쇠퇴) → "비밀열쇠"
+export const P2_HASHES = ['27c5eb7778000f7d197c542df72b5cff0f73bc06eab3c7d507da43190863d627'];
+export const P2_WORDS = [
+  { blank: '□교', answer: '비교' },
+  { blank: '□봉', answer: '밀봉' },
+  { blank: '□쇠', answer: '열쇠' },
+  { blank: '□퇴', answer: '쇠퇴' },
 ];
 
 // ── 퍼즐 3: 방향 암호 ───────────────────────────────
@@ -47,8 +49,7 @@ export const P4_QUESTIONS = [
 // ── 퍼즐 5: 책장 ─────────────────────────────────────
 // 메모 속 단어 "기억", "안개", "밤" 순서로 뒤집으면 ㄷ+ㅏ+ㄹ = "달"
 export const P5_HASHES = ['2f941e6eb2150679c43fdd2d4078b9cabbf18065d9bb503b0d489811b6d75d8d'];
-export const P5_MEMO = `기억이 안개처럼 천천히 번져간다.
-그 사이로 밤이 조용히 스며든다.`;
+export const P5_MEMO = `기억이 안개처럼 흐려지고, 그 끝에 밤이 조용히 찾아온다.`;
 export const P5_BOOKS = [
   { title: '심연',   back: 'ㅎ'  },
   { title: '밤',     back: 'ㄹ'  }, // answer 3rd
@@ -64,11 +65,16 @@ export const P5_BOOKS = [
   { title: '서재',   back: 'ㅜ'  },
 ];
 
-// ── 퍼즐 6: 주사위 ───────────────────────────────────
-// 표준 주사위: 마주 보는 면의 합 = 7
-// 보이는 면: 1, 5, 3, 2 → 반대면: 6, 2, 4, 5 → "6245"
-export const P6_HASHES = ['a288403a28bae669ae3e0face3416fae6b627c58c60dc52d2b00168e28a62979'];
-export const P6_DICE_FACES = [1, 5, 3, 2]; // shown faces → answer: 6245
+// ── 퍼즐 6: 시계 암호 ────────────────────────────────
+// 시침·분침이 가리키는 숫자를 이어 붙임
+// 시계1: 7:15 → 시침=7, 분침=3(15분) → "73"
+// 시계2: 9:40 → 시침=9, 분침=8(40분) → "98"
+// → 코드: "7398"
+export const P6_HASHES = ['82518f2b58debb04ad77b2e761dac0e824e7c6dd0a61687646a78a13d7d05eb0'];
+export const P6_CLOCKS = [
+  { hour: 7, minute: 15 },  // 분침이 3을 가리킴
+  { hour: 9, minute: 40 },  // 분침이 8을 가리킴
+];
 
 // ── 퍼즐 7: 7세그먼트 암호 ──────────────────────────
 export const P7_HASHES = ['f439f7f80e4c460da59083d41c9aefbf8efcab48e64c33b983d3716e4c4a97e1'];
