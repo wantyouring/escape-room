@@ -65,13 +65,9 @@ function onPuzzleSolved(puzzleId: string): void {
   completedPuzzles.push(puzzleId);
   updateGameState();
   const idx = PUZZLE_ORDER.indexOf(puzzleId);
-  const next = getNextPuzzle(completedPuzzles);
 
-  if (next) {
-    saveProgress(next);
-    const transText = TRANSITIONS[idx] || '다음 단서가 보인다...';
-    showTransition(transText, next);
-  } else {
+  // 퍼즐 10 클리어 → 탈출
+  if (puzzleId === 'puzzle-10') {
     const elapsed = timer.stop();
     SaveManager.clear();
     SaveManager.save({
@@ -83,6 +79,23 @@ function onPuzzleSolved(puzzleId: string): void {
     const escape = new EscapeScene(elapsed, startFresh);
     sceneManager.register(escape);
     sceneManager.transition('escape');
+    return;
+  }
+
+  const all9Solved = PUZZLE_ORDER.slice(0, 9).every(p => completedPuzzles.includes(p));
+
+  if (all9Solved) {
+    // 1~9 모두 해결 → 마지막 퍼즐 해금
+    saveProgress('puzzle-10');
+    showTransition('모든 단서가 모였다... 마지막 문이 열린다.', 'puzzle-10');
+  } else {
+    // 아직 미해결 퍼즐이 있으면 다음 미해결로 이동
+    const nextUnsolved = PUZZLE_ORDER.slice(0, 9).find(p => !completedPuzzles.includes(p));
+    if (nextUnsolved) {
+      saveProgress(nextUnsolved);
+      const transText = TRANSITIONS[idx] || '다음 단서가 보인다...';
+      showTransition(transText, nextUnsolved);
+    }
   }
 }
 

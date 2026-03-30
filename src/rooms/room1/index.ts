@@ -34,6 +34,8 @@ export function setGameState(state: GameState): void {
   gameState = state;
 }
 
+const PUZZLE_ORDER = Array.from({ length: 10 }, (_, i) => `puzzle-${i + 1}`);
+
 const PUZZLE_NAMES = [
   '학자의 일기', '카드 암호', '방향 암호', '숨겨진 패턴', '책장',
   '삽입 암호', '취기 속의 아침', '카드 연결', '심장박동', '마지막 편지',
@@ -51,7 +53,8 @@ function toggleDropdown(anchor: HTMLElement): void {
     const id = `puzzle-${i + 1}`;
     const solved = gameState.completedPuzzles.includes(id);
     const isCurrent = gameState.currentPuzzle === id;
-    const accessible = solved || isCurrent;
+    const allPrev9Solved = PUZZLE_ORDER.slice(0, 9).every(p => gameState!.completedPuzzles.includes(p));
+    const accessible = i < 9 || allPrev9Solved; // 1~9번은 항상 접근 가능, 10번은 1~9 모두 풀어야
 
     const item = document.createElement('div');
     item.className = `dropdown-item${solved ? ' solved' : ''}${isCurrent ? ' current' : ''}${!accessible ? ' locked' : ''}`;
