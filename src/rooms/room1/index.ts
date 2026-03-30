@@ -11,14 +11,14 @@ import {
 import {
   P1_HASHES, P1_NOTE, P1_HIDDEN_WORDS,
   P2_HASHES, P2_MIRROR_TEXT,
-  P3_HASHES, P3_DOC_LINES,
-  P4_HASHES, P4_EQUATIONS, P4_INSTRUCTION,
+  P3_HASHES, P3_ROWS,
+  P4_HASHES, P4_EXAMPLES, P4_QUESTIONS,
   P5_HASHES, P5_BOOKS, P5_COLOR_HINT,
-  P6_HASHES, P6_SYMBOLS, P6_KEY,
-  P7_HASHES, P7_CIPHER, P7_TABLE_HINT, P7_TABLE,
+  P6_HASHES, P6_GRID_CELLS,
+  P7_HASHES, P7_DISPLAY,
   P8_HASHES, P8_GRID, P8_START,
   P9_HASHES, P9_MORSE, P9_REF,
-  P10_HASHES, P10_RIDDLES,
+  P10_HASHES, P10_LETTER_LINES,
 } from './puzzles';
 
 /** 게임 상태 참조 (main.ts에서 주입) */
@@ -219,20 +219,42 @@ export class Puzzle3Scene implements Scene {
   mount(container: HTMLElement): void {
     const w = createPuzzleWrapper(3, 10, this.timer);
 
-    const doc = document.createElement('div');
-    doc.className = 'redacted-doc';
-    P3_DOC_LINES.forEach(line => {
-      const el = document.createElement('p');
-      el.className = `doc-line doc-${line.type}`;
-      el.textContent = line.text;
-      doc.appendChild(el);
-    });
-    w.appendChild(doc);
+    const desc = document.createElement('p');
+    desc.className = 'puzzle-description';
+    desc.textContent = '벽에 이상한 기호가 새겨져 있다. 화살표는 무엇을 의미할까...';
+    w.appendChild(desc);
 
-    const input = createTextInput('○○', '가려진 단어를 입력하세요 (2글자)', async (v) => {
+    // Direction cipher grid
+    const grid = document.createElement('div');
+    grid.className = 'dir-cipher-grid';
+    P3_ROWS.forEach(row => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'dir-row';
+      row.forEach(cell => {
+        const cellEl = document.createElement('div');
+        cellEl.className = `dir-cell ${cell.t === 'A' ? 'dir-arrow' : 'dir-letter'}`;
+        cellEl.textContent = cell.v;
+        rowEl.appendChild(cellEl);
+      });
+      grid.appendChild(rowEl);
+    });
+    w.appendChild(grid);
+
+    // Compass hint
+    const compass = document.createElement('div');
+    compass.className = 'compass-hint';
+    compass.innerHTML = `
+      <span class="compass-item">↑ = North</span>
+      <span class="compass-item">↓ = South</span>
+      <span class="compass-item">→ = East</span>
+      <span class="compass-item">← = West</span>
+    `;
+    w.appendChild(compass);
+
+    const input = createTextInput('○○○○', '마지막 단어를 영어로 입력하세요 (4글자)', async (v) => {
       if (await verifyAnswer(v, P3_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
-    });
+    }, 10);
     w.appendChild(input);
     container.appendChild(w);
   }
@@ -253,25 +275,58 @@ export class Puzzle4Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '벽에 수식이 새겨져 있다...';
+    desc.textContent = '영어 숫자 단어 속에 로마 숫자가 숨어있다...';
     w.appendChild(desc);
 
-    const eqBox = document.createElement('div');
-    eqBox.className = 'equation-box';
-    P4_EQUATIONS.forEach(eq => {
-      const line = document.createElement('div');
-      line.className = 'equation-line';
-      line.textContent = eq;
-      eqBox.appendChild(line);
+    // Examples
+    const exBox = document.createElement('div');
+    exBox.className = 'roman-box';
+
+    const exTitle = document.createElement('div');
+    exTitle.className = 'roman-title';
+    exTitle.textContent = '예시';
+    exBox.appendChild(exTitle);
+
+    P4_EXAMPLES.forEach(ex => {
+      const row = document.createElement('div');
+      row.className = 'roman-row roman-example';
+      const wordEl = document.createElement('span');
+      wordEl.className = 'roman-word';
+      wordEl.innerHTML = ex.word.map(p => p.startsWith('(') ? `<span class="roman-num">${p}</span>` : p).join('');
+      const eq = document.createElement('span');
+      eq.className = 'roman-eq';
+      eq.textContent = ` = ${ex.value}`;
+      row.appendChild(wordEl);
+      row.appendChild(eq);
+      exBox.appendChild(row);
     });
-    w.appendChild(eqBox);
+    w.appendChild(exBox);
 
-    const hint = document.createElement('p');
-    hint.className = 'puzzle-sub-hint';
-    hint.textContent = P4_INSTRUCTION;
-    w.appendChild(hint);
+    // Questions
+    const qBox = document.createElement('div');
+    qBox.className = 'roman-box roman-questions';
 
-    const input = createCodeInput(2, async (v) => {
+    const qTitle = document.createElement('div');
+    qTitle.className = 'roman-title';
+    qTitle.textContent = '비밀번호의 각 자리는?';
+    qBox.appendChild(qTitle);
+
+    P4_QUESTIONS.forEach(q => {
+      const row = document.createElement('div');
+      row.className = 'roman-row';
+      const wordEl = document.createElement('span');
+      wordEl.className = 'roman-word';
+      wordEl.innerHTML = q.word.map(p => p.startsWith('(') ? `<span class="roman-num">${p}</span>` : p).join('');
+      const label = document.createElement('span');
+      label.className = 'roman-label';
+      label.textContent = ` → ${q.label}`;
+      row.appendChild(wordEl);
+      row.appendChild(label);
+      qBox.appendChild(row);
+    });
+    w.appendChild(qBox);
+
+    const input = createCodeInput(4, async (v) => {
       if (await verifyAnswer(v, P4_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     });
@@ -345,30 +400,30 @@ export class Puzzle6Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '바닥에 기호들이 흩어져 있다. 각 기호의 개수를 세세요.';
+    desc.textContent = '벽에 격자판이 빛나고 있다. 자음의 순서가 위치를 나타낸다...';
     w.appendChild(desc);
 
-    const field = document.createElement('div');
-    field.className = 'symbol-field';
-    P6_SYMBOLS.forEach(sym => {
+    // 3x3 Grid
+    const gridEl = document.createElement('div');
+    gridEl.className = 'consonant-grid';
+    P6_GRID_CELLS.forEach(cell => {
       const el = document.createElement('div');
-      el.className = `symbol sym-${sym.type === '★' ? 'star' : sym.type === '◆' ? 'diamond' : 'circle'}`;
-      el.style.left = `${sym.x}%`;
-      el.style.top = `${sym.y}%`;
-      el.textContent = sym.type;
-      field.appendChild(el);
+      el.className = 'cg-cell';
+      el.innerHTML = `<span class="cg-char">${cell.char}</span><span class="cg-cons">${cell.consonant}</span>`;
+      gridEl.appendChild(el);
     });
-    w.appendChild(field);
+    w.appendChild(gridEl);
 
-    const key = document.createElement('p');
-    key.className = 'puzzle-sub-hint';
-    key.textContent = P6_KEY;
-    w.appendChild(key);
+    // Example
+    const ex = document.createElement('p');
+    ex.className = 'puzzle-sub-hint';
+    ex.textContent = '예시: ㄱ ㄴ = 비밀 / 질문: ㅅ ㅇ ㅁ ㅂ = ?';
+    w.appendChild(ex);
 
-    const input = createCodeInput(3, async (v) => {
+    const input = createTextInput('○○○○', '해당하는 글자를 순서대로 (4글자)', async (v) => {
       if (await verifyAnswer(v, P6_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
-    });
+    }, 10);
     w.appendChild(input);
     container.appendChild(w);
   }
@@ -389,35 +444,29 @@ export class Puzzle7Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '오래된 해독표와 암호문이 발견되었다...';
+    desc.textContent = '디지털 표시판이 깜빡이고 있다. 뭔가 이상하다...';
     w.appendChild(desc);
 
-    // Cipher text
-    const cipher = document.createElement('div');
-    cipher.className = 'cipher-display';
-    cipher.textContent = P7_CIPHER;
-    w.appendChild(cipher);
-
-    // Table
-    const table = document.createElement('div');
-    table.className = 'cipher-table';
-    P7_TABLE.forEach(({ consonant, num }) => {
-      const cell = document.createElement('div');
-      cell.className = 'cipher-cell';
-      cell.innerHTML = `<span class="cipher-key">${consonant}</span><span class="cipher-val">${num}</span>`;
-      table.appendChild(cell);
+    // 7-segment display
+    const segDisplay = document.createElement('div');
+    segDisplay.className = 'seg-display';
+    P7_DISPLAY.forEach(digit => {
+      const d = document.createElement('div');
+      d.className = `seg-digit seg-${digit}`;
+      d.setAttribute('data-digit', digit);
+      segDisplay.appendChild(d);
     });
-    w.appendChild(table);
+    w.appendChild(segDisplay);
 
     const hint = document.createElement('p');
     hint.className = 'puzzle-sub-hint';
-    hint.textContent = P7_TABLE_HINT;
+    hint.textContent = '이 숫자들을 180° 뒤집어 읽으면? (영어 4글자)';
     w.appendChild(hint);
 
-    const input = createTextInput('○○', '해독된 단어를 입력하세요 (2글자)', async (v) => {
+    const input = createTextInput('○○○○', '영어 단어를 입력하세요 (4글자)', async (v) => {
       if (await verifyAnswer(v, P7_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
-    });
+    }, 10);
     w.appendChild(input);
     container.appendChild(w);
   }
@@ -542,27 +591,35 @@ export class Puzzle10Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '마지막 자물쇠. 네 자리 코드가 필요하다.';
+    desc.textContent = '학자가 마지막으로 남긴 편지다. 무언가 숨겨져 있다...';
     w.appendChild(desc);
 
-    const riddleBox = document.createElement('div');
-    riddleBox.className = 'riddle-box';
+    const letter = document.createElement('div');
+    letter.className = 'acrostic-letter';
 
-    P10_RIDDLES.forEach((r, i) => {
-      const row = document.createElement('div');
-      row.className = 'riddle-row';
-      row.innerHTML = `
-        <span class="riddle-num">${i + 1}번째 자리</span>
-        <span class="riddle-q">${r.question}</span>
-      `;
-      riddleBox.appendChild(row);
+    P10_LETTER_LINES.forEach((line) => {
+      const lineEl = document.createElement('p');
+      lineEl.className = 'acrostic-line';
+      const firstChar = document.createElement('span');
+      firstChar.className = 'acrostic-first';
+      firstChar.textContent = line[0];
+      const rest = document.createElement('span');
+      rest.textContent = line.slice(1);
+      lineEl.appendChild(firstChar);
+      lineEl.appendChild(rest);
+      letter.appendChild(lineEl);
     });
-    w.appendChild(riddleBox);
+    w.appendChild(letter);
 
-    const input = createCodeInput(4, async (v) => {
+    const hint = document.createElement('p');
+    hint.className = 'puzzle-sub-hint';
+    hint.textContent = '각 줄의 첫 글자를 순서대로 모으세요';
+    w.appendChild(hint);
+
+    const input = createTextInput('○○○○', '모은 글자를 입력하세요 (4글자)', async (v) => {
       if (await verifyAnswer(v, P10_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
-    });
+    }, 10);
     w.appendChild(input);
     container.appendChild(w);
   }

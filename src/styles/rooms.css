@@ -419,7 +419,251 @@
 }
 
 /* ============================================================
-   PUZZLE 3 — REDACTED DOCUMENT
+   PUZZLE 3 — DIRECTION CIPHER
+   ============================================================ */
+.dir-cipher-grid {
+  margin: 32px auto 0;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.dir-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.dir-cell {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border-radius: 4px;
+}
+
+.dir-letter {
+  font-family: var(--font-ui);
+  color: var(--text-primary);
+  font-weight: bold;
+  background: #111;
+}
+
+.dir-arrow {
+  font-size: 24px;
+  color: var(--accent-amber);
+  background: #0d0d08;
+  border-color: var(--accent-amber);
+}
+
+.compass-hint {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  margin-top: 20px;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.compass-item {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   PUZZLE 4 — HIDDEN ROMAN NUMERALS
+   ============================================================ */
+.roman-box {
+  margin: 24px auto 0;
+  max-width: 300px;
+  padding: 20px;
+  background: var(--bg-surface);
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+}
+
+.roman-questions {
+  margin-top: 16px;
+  border-color: var(--accent-amber);
+}
+
+.roman-title {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.roman-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.roman-row:last-child { margin-bottom: 0; }
+
+.roman-word {
+  font-family: var(--font-ui);
+  font-size: 22px;
+  color: var(--text-primary);
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.roman-num {
+  color: var(--accent-amber);
+  font-size: 18px;
+}
+
+.roman-eq {
+  font-family: var(--font-ui);
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.roman-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--accent-amber);
+}
+
+.roman-example .roman-word {
+  font-size: 18px;
+}
+
+/* ============================================================
+   PUZZLE 6 — CONSONANT GRID
+   ============================================================ */
+.consonant-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 32px auto 0;
+  max-width: 240px;
+}
+
+.cg-cell {
+  aspect-ratio: 1;
+  background: var(--bg-surface);
+  border: 1px solid #222;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: default;
+}
+
+.cg-char {
+  font-family: var(--font-story);
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.cg-cons {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  color: var(--accent-amber);
+}
+
+/* ============================================================
+   PUZZLE 7 — 7-SEGMENT DISPLAY
+   ============================================================ */
+.seg-display {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 48px auto 0;
+  padding: 24px;
+  background: #060608;
+  border: 1px solid #111;
+  border-radius: 4px;
+  max-width: 280px;
+}
+
+/* Each digit uses CSS clip-path/background to simulate 7-segment */
+.seg-digit {
+  width: 48px;
+  height: 80px;
+  position: relative;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 64px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Dim "off" segments */
+  text-shadow: none;
+  filter: brightness(0.4);
+}
+
+/* Active segment glow */
+.seg-digit::after {
+  content: attr(data-digit);
+  position: absolute;
+  color: #888;
+  filter: brightness(1.8);
+  font-size: 64px;
+  font-weight: bold;
+}
+
+/* ============================================================
+   PUZZLE 10 — ACROSTIC LETTER
+   ============================================================ */
+.acrostic-letter {
+  margin: 32px auto 0;
+  max-width: 300px;
+  padding: 24px;
+  background: #0c0c0a;
+  border: 1px solid #1a1a14;
+  border-radius: 2px;
+  position: relative;
+}
+
+.acrostic-letter::before {
+  content: '─ 학자의 유서 ─';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-ui);
+  font-size: 9px;
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.acrostic-line {
+  font-family: var(--font-story);
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 2;
+  margin-bottom: 2px;
+}
+
+.acrostic-first {
+  color: var(--accent-amber);
+  font-weight: bold;
+  font-size: 16px;
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* ============================================================
+   PUZZLE 3 — REDACTED DOCUMENT (legacy, kept for reference)
    ============================================================ */
 .redacted-doc {
   margin: 40px auto 0;
