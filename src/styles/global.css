@@ -42,7 +42,7 @@ body {
 #app {
   max-width: 420px;
   margin: 0 auto;
-  min-height: 100dvh;
+  height: 100dvh;
   background: var(--bg-primary);
   position: relative;
   overflow: hidden;
@@ -187,7 +187,7 @@ body {
 /* Code input */
 .code-input-area {
   text-align: center;
-  margin-top: 64px;
+  margin-top: 28px;
 }
 
 .code-input {
@@ -218,7 +218,7 @@ body {
 /* Word input */
 .word-input-area {
   text-align: center;
-  margin-top: 48px;
+  margin-top: 24px;
 }
 
 .word-input {

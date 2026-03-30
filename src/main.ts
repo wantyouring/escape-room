@@ -82,18 +82,23 @@ function onPuzzleSolved(puzzleId: string): void {
     return;
   }
 
-  const all9Solved = PUZZLE_ORDER.slice(0, 9).every(p => completedPuzzles.includes(p));
+  const nextIdx = idx + 1; // 순서상 다음 퍼즐 (0-based)
+  const transText = TRANSITIONS[idx] || '다음 단서가 보인다...';
 
-  if (all9Solved) {
-    // 1~9 모두 해결 → 마지막 퍼즐 해금
-    saveProgress('puzzle-10');
-    showTransition('모든 단서가 모였다... 마지막 문이 열린다.', 'puzzle-10');
-  } else {
-    // 아직 미해결 퍼즐이 있으면 다음 미해결로 이동
-    const nextUnsolved = PUZZLE_ORDER.slice(0, 9).find(p => !completedPuzzles.includes(p));
-    if (nextUnsolved) {
+  if (nextIdx < 9) {
+    // 1~8번 풀면 순서대로 다음 퍼즐로
+    const next = PUZZLE_ORDER[nextIdx];
+    saveProgress(next);
+    showTransition(transText, next);
+  } else if (nextIdx === 9) {
+    // 9번 풀었을 때: 1~9 모두 해결이면 10번으로, 아니면 첫 미해결 퍼즐로
+    const all9Solved = PUZZLE_ORDER.slice(0, 9).every(p => completedPuzzles.includes(p));
+    if (all9Solved) {
+      saveProgress('puzzle-10');
+      showTransition('모든 단서가 모였다... 마지막 문이 열린다.', 'puzzle-10');
+    } else {
+      const nextUnsolved = PUZZLE_ORDER.slice(0, 9).find(p => !completedPuzzles.includes(p))!;
       saveProgress(nextUnsolved);
-      const transText = TRANSITIONS[idx] || '다음 단서가 보인다...';
       showTransition(transText, nextUnsolved);
     }
   }
