@@ -872,7 +872,262 @@
 }
 
 /* ============================================================
-   PUZZLE 2 — MIRROR TEXT
+   PUZZLE 2 — MAGIC SQUARE
+   ============================================================ */
+.magic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 40px auto 0;
+  max-width: 200px;
+}
+
+.magic-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  border: 1px solid #222;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 28px;
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.magic-blank {
+  color: var(--accent-amber);
+  border-color: var(--accent-amber);
+  border-style: dashed;
+  font-size: 32px;
+}
+
+/* ============================================================
+   PUZZLE 4 — PATTERN TABLE
+   ============================================================ */
+.pattern-table {
+  margin: 40px auto 0;
+  max-width: 280px;
+  padding: 24px;
+  background: var(--bg-surface);
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+}
+
+.pattern-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-family: var(--font-ui);
+}
+
+.pattern-row:last-child { margin-bottom: 0; }
+
+.pattern-word {
+  font-size: 20px;
+  color: var(--text-primary);
+  font-weight: bold;
+  letter-spacing: 2px;
+  min-width: 80px;
+  text-align: right;
+}
+
+.pattern-sep {
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.pattern-val {
+  font-size: 24px;
+  color: var(--accent-amber);
+  font-weight: bold;
+  min-width: 32px;
+}
+
+.pattern-question .pattern-word {
+  color: var(--text-secondary);
+}
+
+.pattern-unknown {
+  color: var(--error) !important;
+  font-size: 28px;
+}
+
+.pattern-divider {
+  border-top: 1px solid #222;
+  margin: 12px 0 16px;
+}
+
+/* ============================================================
+   PUZZLE 5 — BOOKSHELF MEMO + 12 BOOKS
+   ============================================================ */
+.bookshelf-memo {
+  margin: 24px auto 0;
+  max-width: 320px;
+  padding: 16px 20px;
+  background: #0e0e0a;
+  border: 1px solid #2a2a14;
+  border-radius: 2px;
+  font-family: var(--font-story);
+  font-size: 13px;
+  color: var(--accent-amber);
+  line-height: 1.8;
+}
+
+.bookshelf-12 {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+.book-num {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  color: rgba(255,255,255,0.2);
+}
+
+/* ============================================================
+   PUZZLE 6 — WORD CHAIN
+   ============================================================ */
+.word-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 40px auto 0;
+  max-width: 320px;
+}
+
+.chain-word {
+  padding: 10px 14px;
+  background: var(--bg-surface);
+  border: 1px solid #222;
+  border-radius: 4px;
+  font-family: var(--font-story);
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.chain-body {
+  color: var(--text-secondary);
+}
+
+.chain-bridge {
+  color: var(--accent-amber);
+  font-weight: bold;
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+.chain-arrow {
+  font-size: 18px;
+  color: var(--text-muted);
+  padding: 0 2px;
+}
+
+/* ============================================================
+   PUZZLE 7 — 7-SEGMENT DISPLAY
+   ============================================================ */
+.seg-display {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #03040a;
+  border: 1px solid #111;
+  border-radius: 6px;
+  max-width: 280px;
+}
+
+.seg-digit {
+  position: relative;
+  width: 40px;
+  height: 72px;
+}
+
+/* 7 segments: a=top, b=top-right, c=bot-right, d=bot, e=bot-left, f=top-left, g=mid */
+.seg {
+  position: absolute;
+  background: var(--accent-amber);
+  border-radius: 2px;
+  transition: opacity 0.1s;
+}
+
+.seg-on { opacity: 0.9; }
+.seg-off { opacity: 0.06; }
+
+/* Horizontal segments */
+.seg-a { top: 0;    left: 4px;  width: 32px; height: 5px; }
+.seg-g { top: 34px; left: 4px;  width: 32px; height: 5px; }
+.seg-d { top: 67px; left: 4px;  width: 32px; height: 5px; }
+
+/* Vertical segments */
+.seg-f { top: 4px;  left: 0;    width: 5px; height: 28px; }
+.seg-b { top: 4px;  right: 0;   width: 5px; height: 28px; }
+.seg-e { top: 38px; left: 0;    width: 5px; height: 28px; }
+.seg-c { top: 38px; right: 0;   width: 5px; height: 28px; }
+
+/* ============================================================
+   PUZZLE 8 — WORD CARDS
+   ============================================================ */
+.word-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 40px auto 0;
+  max-width: 320px;
+}
+
+.word-card {
+  padding: 14px 20px;
+  background: var(--bg-surface);
+  border: 1px solid #333;
+  border-radius: 6px;
+  font-family: var(--font-story);
+  font-size: 20px;
+  color: var(--text-primary);
+  cursor: default;
+  user-select: none;
+}
+
+/* ============================================================
+   PUZZLE 9 — ECG HEARTBEAT
+   ============================================================ */
+.ecg-wrap {
+  margin: 24px auto 0;
+  max-width: 320px;
+  padding: 16px 8px;
+  background: #020408;
+  border: 1px solid #0a1220;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ecg-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.ecg-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   PUZZLE 2 — MIRROR TEXT (legacy)
    ============================================================ */
 .mirror-frame {
   margin: 48px auto 0;

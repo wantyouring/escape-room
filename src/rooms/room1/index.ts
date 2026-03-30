@@ -10,14 +10,14 @@ import {
 } from '../../ui/components';
 import {
   P1_HASHES, P1_NOTE, P1_HIDDEN_WORDS,
-  P2_HASHES, P2_MIRROR_TEXT,
+  P2_HASHES, P2_GRID,
   P3_HASHES, P3_ROWS,
   P4_HASHES, P4_EXAMPLES, P4_QUESTIONS,
-  P5_HASHES, P5_BOOKS, P5_COLOR_HINT,
-  P6_HASHES, P6_GRID_CELLS,
-  P7_HASHES, P7_DISPLAY,
-  P8_HASHES, P8_GRID, P8_START,
-  P9_HASHES, P9_MORSE, P9_REF,
+  P5_HASHES, P5_MEMO, P5_BOOKS,
+  P6_HASHES, P6_CHAIN,
+  P7_HASHES, P7_DISPLAY, P7_HINT_TEXT,
+  P8_HASHES, P8_WORDS_SCRAMBLED,
+  P9_HASHES, P9_MORSE_GROUPS, P9_REF,
   P10_HASHES, P10_LETTER_LINES,
 } from './puzzles';
 
@@ -181,23 +181,34 @@ export class Puzzle2Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '벽에 걸린 거울에 글씨가 비친다...';
+    desc.textContent = '칠판에 수수께끼 격자가 그려져 있다. 가로·세로·대각선의 합이 모두 같다...';
     w.appendChild(desc);
 
-    const mirror = document.createElement('div');
-    mirror.className = 'mirror-frame';
-    const mirrorText = document.createElement('div');
-    mirrorText.className = 'mirror-text';
-    mirrorText.textContent = P2_MIRROR_TEXT;
-    mirror.appendChild(mirrorText);
-    w.appendChild(mirror);
+    const grid = document.createElement('div');
+    grid.className = 'magic-grid';
+
+    P2_GRID.forEach((row, ri) => {
+      row.forEach((cell, ci) => {
+        const el = document.createElement('div');
+        el.className = `magic-cell${cell === null ? ' magic-blank' : ''}`;
+        if (cell !== null) {
+          el.textContent = String(cell);
+        } else {
+          el.textContent = '?';
+          el.dataset.row = String(ri);
+          el.dataset.col = String(ci);
+        }
+        grid.appendChild(el);
+      });
+    });
+    w.appendChild(grid);
 
     const hint = document.createElement('p');
     hint.className = 'puzzle-sub-hint';
-    hint.textContent = '거울에 비친 글자는 뒤집혀 보입니다';
+    hint.textContent = '모든 행·열·대각선의 합은 동일합니다. 네 모서리의 숫자를 순서대로 (왼쪽 위→오른쪽 위→왼쪽 아래→오른쪽 아래)';
     w.appendChild(hint);
 
-    const input = createTextInput('○○', '거울 속 단어를 입력하세요 (2글자)', async (v) => {
+    const input = createCodeInput(4, async (v) => {
       if (await verifyAnswer(v, P2_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     });
@@ -241,15 +252,6 @@ export class Puzzle3Scene implements Scene {
     w.appendChild(grid);
 
     // Compass hint
-    const compass = document.createElement('div');
-    compass.className = 'compass-hint';
-    compass.innerHTML = `
-      <span class="compass-item">↑ = North</span>
-      <span class="compass-item">↓ = South</span>
-      <span class="compass-item">→ = East</span>
-      <span class="compass-item">← = West</span>
-    `;
-    w.appendChild(compass);
 
     const input = createTextInput('○○○○', '마지막 단어를 영어로 입력하세요 (4글자)', async (v) => {
       if (await verifyAnswer(v, P3_HASHES)) { hapticFeedback(); this.onSolved(); }
@@ -275,58 +277,41 @@ export class Puzzle4Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '영어 숫자 단어 속에 로마 숫자가 숨어있다...';
+    desc.textContent = '낡은 암호표가 발견됐다. 규칙을 찾아 빈칸을 채우시오.';
     w.appendChild(desc);
 
+    const table = document.createElement('div');
+    table.className = 'pattern-table';
+
     // Examples
-    const exBox = document.createElement('div');
-    exBox.className = 'roman-box';
-
-    const exTitle = document.createElement('div');
-    exTitle.className = 'roman-title';
-    exTitle.textContent = '예시';
-    exBox.appendChild(exTitle);
-
     P4_EXAMPLES.forEach(ex => {
       const row = document.createElement('div');
-      row.className = 'roman-row roman-example';
-      const wordEl = document.createElement('span');
-      wordEl.className = 'roman-word';
-      wordEl.innerHTML = ex.word.map(p => p.startsWith('(') ? `<span class="roman-num">${p}</span>` : p).join('');
-      const eq = document.createElement('span');
-      eq.className = 'roman-eq';
-      eq.textContent = ` = ${ex.value}`;
-      row.appendChild(wordEl);
-      row.appendChild(eq);
-      exBox.appendChild(row);
+      row.className = 'pattern-row';
+      row.innerHTML = `<span class="pattern-word">${ex.label}</span><span class="pattern-sep">=</span><span class="pattern-val">${ex.value}</span>`;
+      table.appendChild(row);
     });
-    w.appendChild(exBox);
+
+    // Divider
+    const div = document.createElement('div');
+    div.className = 'pattern-divider';
+    table.appendChild(div);
 
     // Questions
-    const qBox = document.createElement('div');
-    qBox.className = 'roman-box roman-questions';
-
-    const qTitle = document.createElement('div');
-    qTitle.className = 'roman-title';
-    qTitle.textContent = '비밀번호의 각 자리는?';
-    qBox.appendChild(qTitle);
-
     P4_QUESTIONS.forEach(q => {
       const row = document.createElement('div');
-      row.className = 'roman-row';
-      const wordEl = document.createElement('span');
-      wordEl.className = 'roman-word';
-      wordEl.innerHTML = q.word.map(p => p.startsWith('(') ? `<span class="roman-num">${p}</span>` : p).join('');
-      const label = document.createElement('span');
-      label.className = 'roman-label';
-      label.textContent = ` → ${q.label}`;
-      row.appendChild(wordEl);
-      row.appendChild(label);
-      qBox.appendChild(row);
+      row.className = 'pattern-row pattern-question';
+      row.innerHTML = `<span class="pattern-word">${q.label}</span><span class="pattern-sep">=</span><span class="pattern-val pattern-unknown">?</span>`;
+      table.appendChild(row);
     });
-    w.appendChild(qBox);
 
-    const input = createCodeInput(4, async (v) => {
+    w.appendChild(table);
+
+    const hint = document.createElement('p');
+    hint.className = 'puzzle-sub-hint';
+    hint.textContent = '두 자리 숫자를 입력하세요';
+    w.appendChild(hint);
+
+    const input = createCodeInput(2, async (v) => {
       if (await verifyAnswer(v, P4_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     });
@@ -348,22 +333,28 @@ export class Puzzle5Scene implements Scene {
   mount(container: HTMLElement): void {
     const w = createPuzzleWrapper(5, 10, this.timer);
 
-    const desc = document.createElement('p');
-    desc.className = 'puzzle-description';
-    desc.textContent = '책장의 책들을 뒤집어 보세요...';
-    w.appendChild(desc);
+    // Memo above bookshelf
+    const memo = document.createElement('div');
+    memo.className = 'bookshelf-memo';
+    memo.textContent = P5_MEMO;
+    w.appendChild(memo);
 
+    // 12-book shelf (3 rows × 4)
     const shelf = document.createElement('div');
-    shelf.className = 'bookshelf';
-    P5_BOOKS.forEach(book => {
+    shelf.className = 'bookshelf bookshelf-12';
+    P5_BOOKS.forEach((book, idx) => {
       const el = document.createElement('div');
-      el.className = `book book-${book.color}`;
+      el.className = 'book book-dark';
+      el.dataset.idx = String(idx + 1);
+
       const front = document.createElement('div');
       front.className = 'book-front';
-      front.innerHTML = `<span class="book-title">${book.title}</span>`;
+      front.innerHTML = `<span class="book-title">${book.title}</span><span class="book-num">${idx + 1}</span>`;
+
       const back = document.createElement('div');
       back.className = 'book-back';
-      if (book.symbol) back.innerHTML = `<span class="book-symbol">${book.symbol}</span>`;
+      back.innerHTML = `<span class="book-symbol">${book.back}</span>`;
+
       el.appendChild(front);
       el.appendChild(back);
       el.addEventListener('click', () => el.classList.toggle('flipped'));
@@ -371,12 +362,12 @@ export class Puzzle5Scene implements Scene {
     });
     w.appendChild(shelf);
 
-    const colorHint = document.createElement('p');
-    colorHint.className = 'puzzle-sub-hint';
-    colorHint.textContent = `색상 순서: ${P5_COLOR_HINT}`;
-    w.appendChild(colorHint);
+    const hint = document.createElement('p');
+    hint.className = 'puzzle-sub-hint';
+    hint.textContent = '순서대로 뒤집어서 나오는 글자를 조합하세요 (1글자)';
+    w.appendChild(hint);
 
-    const input = createTextInput('○', '조합된 글자를 입력하세요 (1글자)', async (v) => {
+    const input = createTextInput('○', '조합된 글자를 입력하세요', async (v) => {
       if (await verifyAnswer(v, P5_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     });
@@ -400,27 +391,38 @@ export class Puzzle6Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '벽에 격자판이 빛나고 있다. 자음의 순서가 위치를 나타낸다...';
+    desc.textContent = '단어들이 서로 이어져 있다. 각 단어 사이의 연결 글자를 찾아라...';
     w.appendChild(desc);
 
-    // 3x3 Grid
-    const gridEl = document.createElement('div');
-    gridEl.className = 'consonant-grid';
-    P6_GRID_CELLS.forEach(cell => {
-      const el = document.createElement('div');
-      el.className = 'cg-cell';
-      el.innerHTML = `<span class="cg-char">${cell.char}</span><span class="cg-cons">${cell.consonant}</span>`;
-      gridEl.appendChild(el);
+    const chain = document.createElement('div');
+    chain.className = 'word-chain';
+    P6_CHAIN.forEach((word, i) => {
+      const wordEl = document.createElement('div');
+      wordEl.className = 'chain-word';
+      // Highlight the bridge syllable (last char of this word = first char of next)
+      if (i < P6_CHAIN.length - 1) {
+        const body = word.slice(0, -1);
+        const bridge = word.slice(-1);
+        wordEl.innerHTML = `<span class="chain-body">${body}</span><span class="chain-bridge">${bridge}</span>`;
+      } else {
+        wordEl.textContent = word;
+      }
+      chain.appendChild(wordEl);
+      if (i < P6_CHAIN.length - 1) {
+        const arrow = document.createElement('div');
+        arrow.className = 'chain-arrow';
+        arrow.textContent = '→';
+        chain.appendChild(arrow);
+      }
     });
-    w.appendChild(gridEl);
+    w.appendChild(chain);
 
-    // Example
-    const ex = document.createElement('p');
-    ex.className = 'puzzle-sub-hint';
-    ex.textContent = '예시: ㄱ ㄴ = 비밀 / 질문: ㅅ ㅇ ㅁ ㅂ = ?';
-    w.appendChild(ex);
+    const hint = document.createElement('p');
+    hint.className = 'puzzle-sub-hint';
+    hint.textContent = '각 단어 사이의 연결 글자(강조된 부분)를 순서대로 이어 붙이세요 (3글자)';
+    w.appendChild(hint);
 
-    const input = createTextInput('○○○○', '해당하는 글자를 순서대로 (4글자)', async (v) => {
+    const input = createTextInput('○○○', '연결 글자를 순서대로 (3글자)', async (v) => {
       if (await verifyAnswer(v, P6_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     }, 10);
@@ -431,7 +433,7 @@ export class Puzzle6Scene implements Scene {
 }
 
 // ============================================================
-// 퍼즐 7: 암호 해독표
+// 퍼즐 7: 7세그먼트 암호
 // ============================================================
 export class Puzzle7Scene implements Scene {
   id = 'puzzle-7';
@@ -444,24 +446,25 @@ export class Puzzle7Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '디지털 표시판이 깜빡이고 있다. 뭔가 이상하다...';
+    desc.textContent = P7_HINT_TEXT;
     w.appendChild(desc);
 
-    // 7-segment display
+    // 7-segment display using CSS
     const segDisplay = document.createElement('div');
     segDisplay.className = 'seg-display';
     P7_DISPLAY.forEach(digit => {
       const d = document.createElement('div');
-      d.className = `seg-digit seg-${digit}`;
-      d.setAttribute('data-digit', digit);
+      d.className = `seg-digit`;
+      // Build 7 segments: a(top) b(top-right) c(bot-right) d(bot) e(bot-left) f(top-left) g(mid)
+      const segs = getSegments(digit);
+      ['a','b','c','d','e','f','g'].forEach(s => {
+        const seg = document.createElement('span');
+        seg.className = `seg seg-${s} ${segs.includes(s) ? 'seg-on' : 'seg-off'}`;
+        d.appendChild(seg);
+      });
       segDisplay.appendChild(d);
     });
     w.appendChild(segDisplay);
-
-    const hint = document.createElement('p');
-    hint.className = 'puzzle-sub-hint';
-    hint.textContent = '이 숫자들을 180° 뒤집어 읽으면? (영어 4글자)';
-    w.appendChild(hint);
 
     const input = createTextInput('○○○○', '영어 단어를 입력하세요 (4글자)', async (v) => {
       if (await verifyAnswer(v, P7_HASHES)) { hapticFeedback(); this.onSolved(); }
@@ -473,8 +476,24 @@ export class Puzzle7Scene implements Scene {
   teardown(): void {}
 }
 
+function getSegments(digit: string): string[] {
+  const map: Record<string, string[]> = {
+    '0': ['a','b','c','d','e','f'],
+    '1': ['b','c'],
+    '2': ['a','b','d','e','g'],
+    '3': ['a','b','c','d','g'],
+    '4': ['b','c','f','g'],
+    '5': ['a','c','d','f','g'],
+    '6': ['a','c','d','e','f','g'],
+    '7': ['a','b','c'],
+    '8': ['a','b','c','d','e','f','g'],
+    '9': ['a','b','c','d','f','g'],
+  };
+  return map[digit] ?? [];
+}
+
 // ============================================================
-// 퍼즐 8: 좌표 그리드
+// 퍼즐 8: 끝말잇기 순서
 // ============================================================
 export class Puzzle8Scene implements Scene {
   id = 'puzzle-8';
@@ -487,37 +506,34 @@ export class Puzzle8Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '격자판에 화살표와 글자가 있다. 시작점에서 화살표를 따라가세요.';
+    desc.textContent = '단어 카드들이 뒤섞여 있다. 끝말잇기가 되도록 순서를 찾아라...';
     w.appendChild(desc);
 
-    const grid = document.createElement('div');
-    grid.className = 'arrow-grid';
-    P8_GRID.forEach((row, ri) => {
-      row.forEach((cell, ci) => {
-        const el = document.createElement('div');
-        el.className = 'arrow-cell';
-        const isStart = ri === P8_START.row && ci === P8_START.col;
-        if (isStart) el.classList.add('arrow-start');
-        if (cell.dir === '★') el.classList.add('arrow-end');
-
-        el.innerHTML = `
-          <span class="arrow-char">${cell.ch}</span>
-          <span class="arrow-dir">${cell.dir}</span>
-        `;
-        grid.appendChild(el);
-      });
+    // Scrambled word cards
+    const cards = document.createElement('div');
+    cards.className = 'word-cards';
+    P8_WORDS_SCRAMBLED.forEach(word => {
+      const card = document.createElement('div');
+      card.className = 'word-card';
+      card.textContent = word;
+      cards.appendChild(card);
     });
-    w.appendChild(grid);
+    w.appendChild(cards);
 
     const hint = document.createElement('p');
     hint.className = 'puzzle-sub-hint';
-    hint.textContent = '강조된 칸에서 출발. 화살표 방향으로 이동하며 글자가 있는 칸의 글자를 모으세요. ★이 도착점.';
+    hint.textContent = '올바른 순서로 이어지는 네 단어의 첫 글자를 순서대로 쓰세요 (4글자)';
     w.appendChild(hint);
 
-    const input = createTextInput('○○', '모은 글자를 입력하세요 (2글자)', async (v) => {
+    const example = document.createElement('p');
+    example.className = 'puzzle-sub-hint';
+    example.textContent = '예: 가→가나→나다→다라 이면 답은 "가나다라"';
+    w.appendChild(example);
+
+    const input = createTextInput('○○○○', '첫 글자를 순서대로 (4글자)', async (v) => {
       if (await verifyAnswer(v, P8_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
-    });
+    }, 10);
     w.appendChild(input);
     container.appendChild(w);
   }
@@ -525,7 +541,7 @@ export class Puzzle8Scene implements Scene {
 }
 
 // ============================================================
-// 퍼즐 9: 모스 부호
+// 퍼즐 9: 심장박동
 // ============================================================
 export class Puzzle9Scene implements Scene {
   id = 'puzzle-9';
@@ -538,26 +554,30 @@ export class Puzzle9Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '전등이 깜빡인다. 신호를 해독하세요...';
+    desc.textContent = '심전도 모니터가 신호를 보내고 있다. 박동 패턴을 분석하라...';
     w.appendChild(desc);
 
-    // Morse signal display
-    const morseDisplay = document.createElement('div');
-    morseDisplay.className = 'morse-display';
-    P9_MORSE.forEach(line => {
-      const row = document.createElement('div');
-      row.className = 'morse-line';
-      row.textContent = line;
-      morseDisplay.appendChild(row);
-    });
-    w.appendChild(morseDisplay);
+    // Heartbeat ECG SVG
+    const ecgWrap = document.createElement('div');
+    ecgWrap.className = 'ecg-wrap';
+    ecgWrap.innerHTML = buildECG(P9_MORSE_GROUPS);
+    w.appendChild(ecgWrap);
+
+    // Legend
+    const legend = document.createElement('div');
+    legend.className = 'ecg-legend';
+    legend.innerHTML = `
+      <span class="ecg-leg-item"><svg width="30" height="20"><polyline points="0,15 5,15 5,4 10,4 10,15 30,15" stroke="var(--accent-amber)" fill="none" stroke-width="2"/></svg> 짧은 박동 = ·</span>
+      <span class="ecg-leg-item"><svg width="40" height="20"><polyline points="0,15 5,15 5,4 20,4 20,15 40,15" stroke="var(--accent-amber)" fill="none" stroke-width="2"/></svg> 긴 박동 = —</span>
+    `;
+    w.appendChild(legend);
 
     // Reference table
     const ref = document.createElement('div');
     ref.className = 'morse-ref';
     const refTitle = document.createElement('div');
     refTitle.className = 'morse-ref-title';
-    refTitle.textContent = '모스 부호 참조표';
+    refTitle.textContent = '신호 해독표';
     ref.appendChild(refTitle);
     Object.entries(P9_REF).forEach(([code, digit]) => {
       const row = document.createElement('div');
@@ -575,6 +595,33 @@ export class Puzzle9Scene implements Scene {
     container.appendChild(w);
   }
   teardown(): void {}
+}
+
+function buildECG(groups: number[][]): string {
+  // Each group is an array of 0(short) or 1(long)
+  // Build SVG path: baseline at y=40, short spike: up to y=10 width=8, long spike: up to y=10 width=20
+  const W = 320, H = 60;
+  const baseline = 45;
+  const top = 8;
+  let points = `0,${baseline}`;
+  let x = 5;
+
+  groups.forEach((group, gi) => {
+    group.forEach(beat => {
+      const w = beat === 1 ? 16 : 6; // long or short width
+      points += ` ${x},${baseline} ${x},${top} ${x + w},${top} ${x + w},${baseline}`;
+      x += w + 6;
+    });
+    // Gap between groups
+    if (gi < groups.length - 1) {
+      x += 12;
+    }
+  });
+  points += ` ${W},${baseline}`;
+
+  return `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    <polyline points="${points}" fill="none" stroke="var(--accent-amber)" stroke-width="2.5" stroke-linejoin="round"/>
+  </svg>`;
 }
 
 // ============================================================
