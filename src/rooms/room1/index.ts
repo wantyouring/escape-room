@@ -10,11 +10,11 @@ import {
 } from '../../ui/components';
 import {
   P1_HASHES, P1_NOTE, P1_HIDDEN_WORDS,
-  P2_HASHES, P2_WORDS,
+  P2_HASHES, P2_CARDS,
   P3_HASHES, P3_ROWS,
   P4_HASHES, P4_EXAMPLES, P4_QUESTIONS,
   P5_HASHES, P5_MEMO, P5_BOOKS,
-  P6_HASHES, P6_CLOCKS,
+  P6_HASHES, P6_EXAMPLES, P6_QUESTION,
   P7_HASHES, P7_DISPLAY, P7_HINT_TEXT,
   P8_HASHES, P8_CARDS,
   P9_HASHES, P9_MORSE_GROUPS, P9_REF,
@@ -35,8 +35,8 @@ export function setGameState(state: GameState): void {
 }
 
 const PUZZLE_NAMES = [
-  '학자의 일기', '빠진 글자', '방향 암호', '숨겨진 패턴', '책장',
-  '시계 암호', '7세그먼트', '카드 연결', '심장박동', '마지막 편지',
+  '학자의 일기', '카드 암호', '방향 암호', '숨겨진 패턴', '책장',
+  '삽입 암호', '7세그먼트', '카드 연결', '심장박동', '마지막 편지',
 ];
 
 function toggleDropdown(anchor: HTMLElement): void {
@@ -181,26 +181,38 @@ export class Puzzle2Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '낡은 쪽지에 단어 조각들이 있다. 빈칸에 들어갈 글자를 찾아라...';
+    desc.textContent = '테이블 위에 카드 네 장이 놓여 있다...';
     w.appendChild(desc);
 
-    const wordList = document.createElement('div');
-    wordList.className = 'word-fill-list';
-
-    P2_WORDS.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'word-fill-row';
-      row.innerHTML = `<span class="wf-blank">${item.blank}</span><span class="wf-arrow">→</span><span class="wf-hint">?</span>`;
-      wordList.appendChild(row);
+    // Suit name reference strip (minimal — just shows suit names)
+    const suitRef = document.createElement('div');
+    suitRef.className = 'suit-ref';
+    ['SPADE', 'HEART', 'DIAMOND', 'CLUB'].forEach(s => {
+      const el = document.createElement('span');
+      el.className = 'suit-ref-item';
+      el.textContent = s;
+      suitRef.appendChild(el);
     });
-    w.appendChild(wordList);
+    w.appendChild(suitRef);
 
-    const hint = document.createElement('p');
-    hint.className = 'puzzle-sub-hint';
-    hint.textContent = '빈칸(□) 글자들을 순서대로 이어 붙이세요 (4글자)';
-    w.appendChild(hint);
+    // Four playing cards
+    const cardRow = document.createElement('div');
+    cardRow.className = 'playing-card-row';
+    P2_CARDS.forEach(c => {
+      const card = document.createElement('div');
+      const isRed = c.suit === '♥' || c.suit === '♦';
+      card.className = `playing-card${isRed ? ' card-red' : ''}`;
+      const rankLabel = c.rank === 1 ? 'A' : String(c.rank);
+      card.innerHTML = `
+        <span class="card-top">${rankLabel}</span>
+        <span class="card-suit">${c.suit}</span>
+        <span class="card-bot">${rankLabel}</span>
+      `;
+      cardRow.appendChild(card);
+    });
+    w.appendChild(cardRow);
 
-    const input = createTextInput('○○○○', '4글자를 입력하세요', async (v) => {
+    const input = createTextInput('○○○○', '4글자 영단어를 입력하세요', async (v) => {
       if (await verifyAnswer(v, P2_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
     }, 10);
@@ -382,73 +394,48 @@ export class Puzzle6Scene implements Scene {
 
     const desc = document.createElement('p');
     desc.className = 'puzzle-description';
-    desc.textContent = '벽에 낡은 시계 두 개가 걸려 있다...';
+    desc.textContent = '암호표가 발견됐다. 규칙을 찾아라...';
     w.appendChild(desc);
 
-    const clockRow = document.createElement('div');
-    clockRow.className = 'clock-row';
+    const cipherBox = document.createElement('div');
+    cipherBox.className = 'in-cipher-box';
 
-    P6_CLOCKS.forEach((c, i) => {
-      const wrap = document.createElement('div');
-      wrap.className = 'clock-wrap';
-      wrap.innerHTML = buildClock(c.hour, c.minute);
-      const label = document.createElement('div');
-      label.className = 'clock-label';
-      label.textContent = `${i + 1}번`;
-      wrap.appendChild(label);
-      clockRow.appendChild(wrap);
+    // Examples
+    P6_EXAMPLES.forEach(ex => {
+      const row = document.createElement('div');
+      row.className = 'in-row in-example';
+      row.innerHTML = `
+        <span class="in-code">${ex.code}</span>
+        <span class="in-sep">→</span>
+        <span class="in-word">${ex.word}</span>
+      `;
+      cipherBox.appendChild(row);
     });
-    w.appendChild(clockRow);
 
-    const hint = document.createElement('p');
-    hint.className = 'puzzle-sub-hint';
-    hint.textContent = '시침과 분침이 가리키는 숫자를 이어 붙이세요 (4자리)';
-    w.appendChild(hint);
+    // Divider
+    const divider = document.createElement('div');
+    divider.className = 'in-divider';
+    cipherBox.appendChild(divider);
 
-    const input = createCodeInput(4, async (v) => {
+    // Question
+    const qrow = document.createElement('div');
+    qrow.className = 'in-row in-question';
+    qrow.innerHTML = `
+      <span class="in-code in-code-q">${P6_QUESTION}</span>
+      <span class="in-sep">→</span>
+      <span class="in-word in-word-q">?</span>
+    `;
+    cipherBox.appendChild(qrow);
+    w.appendChild(cipherBox);
+
+    const input = createTextInput('○○○○', '4글자 영단어를 입력하세요', async (v) => {
       if (await verifyAnswer(v, P6_HASHES)) { hapticFeedback(); this.onSolved(); }
       else showWrongFeedback(input);
-    });
+    }, 10);
     w.appendChild(input);
     container.appendChild(w);
   }
   teardown(): void {}
-}
-
-function buildClock(hour: number, minute: number): string {
-  const cx = 60, cy = 60, r = 54;
-  // Hour hand angle (includes partial hour from minutes)
-  const hourAngle = ((hour % 12) + minute / 60) * 30 - 90;
-  // Minute hand angle
-  const minAngle = (minute / 60) * 360 - 90;
-
-  const toXY = (angle: number, len: number) => ({
-    x: cx + len * Math.cos(angle * Math.PI / 180),
-    y: cy + len * Math.sin(angle * Math.PI / 180),
-  });
-
-  const hEnd = toXY(hourAngle, 32);
-  const mEnd = toXY(minAngle, 46);
-
-  // Hour tick marks and numbers
-  let ticks = '';
-  let nums = '';
-  for (let i = 1; i <= 12; i++) {
-    const a = (i * 30 - 90) * Math.PI / 180;
-    const x1 = cx + 48 * Math.cos(a), y1 = cy + 48 * Math.sin(a);
-    const x2 = cx + 54 * Math.cos(a), y2 = cy + 54 * Math.sin(a);
-    ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="rgba(200,200,200,0.4)" stroke-width="1.5"/>`;
-    const nx = cx + 38 * Math.cos(a), ny = cy + 38 * Math.sin(a);
-    nums += `<text x="${nx.toFixed(1)}" y="${(ny + 4).toFixed(1)}" text-anchor="middle" font-size="9" fill="rgba(200,200,200,0.5)" font-family="monospace">${i}</text>`;
-  }
-
-  return `<svg width="120" height="120" viewBox="0 0 120 120">
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#0a0a10" stroke="rgba(200,200,200,0.2)" stroke-width="2"/>
-    ${ticks}${nums}
-    <line x1="${cx}" y1="${cy}" x2="${hEnd.x.toFixed(1)}" y2="${hEnd.y.toFixed(1)}" stroke="#c8c8c8" stroke-width="3.5" stroke-linecap="round"/>
-    <line x1="${cx}" y1="${cy}" x2="${mEnd.x.toFixed(1)}" y2="${mEnd.y.toFixed(1)}" stroke="var(--accent-amber)" stroke-width="2" stroke-linecap="round"/>
-    <circle cx="${cx}" cy="${cy}" r="3" fill="#c8c8c8"/>
-  </svg>`;
 }
 
 // ============================================================

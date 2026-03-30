@@ -479,69 +479,144 @@
 }
 
 /* ============================================================
-   PUZZLE 2 — WORD FILL-IN (빠진 글자)
+   PUZZLE 2 — CARD CIPHER (카드 암호)
    ============================================================ */
-.word-fill-list {
-  margin: 36px auto 0;
-  max-width: 260px;
+.suit-ref {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px auto 0;
+  flex-wrap: wrap;
+  max-width: 300px;
 }
 
-.word-fill-row {
+.suit-ref-item {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border: 1px solid #1a1a1a;
+  border-radius: 3px;
+}
+
+.playing-card-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px auto 0;
+  max-width: 320px;
+}
+
+.playing-card {
+  width: 60px;
+  height: 84px;
+  background: #f5f5f0;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  color: #1a1a1a;
+}
+
+.card-red {
+  color: #cc2020;
+}
+
+.card-top {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: bold;
+  align-self: flex-start;
+  line-height: 1;
+}
+
+.card-suit {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.card-bot {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: bold;
+  align-self: flex-end;
+  transform: rotate(180deg);
+  line-height: 1;
+}
+
+/* ============================================================
+   PUZZLE 6 — IN-INSERTION CIPHER
+   ============================================================ */
+.in-cipher-box {
+  margin: 32px auto 0;
+  max-width: 280px;
+  padding: 24px 20px;
+  background: var(--bg-surface);
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+}
+
+.in-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 14px 20px;
-  background: var(--bg-surface);
-  border: 1px solid #1a1a1a;
-  border-radius: 6px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
-.wf-blank {
-  font-family: var(--font-story);
+.in-row:last-child { margin-bottom: 0; }
+
+.in-code {
+  font-family: var(--font-ui);
   font-size: 20px;
-  color: var(--text-primary);
-  letter-spacing: 2px;
+  font-weight: bold;
+  color: var(--text-secondary);
+  letter-spacing: 4px;
+  min-width: 56px;
+  text-align: center;
 }
 
-.wf-arrow {
+.in-code-q {
+  color: var(--accent-amber);
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+.in-sep {
   font-size: 14px;
   color: var(--text-muted);
 }
 
-.wf-hint {
+.in-word {
   font-family: var(--font-ui);
   font-size: 18px;
-  color: var(--accent-amber);
-  width: 24px;
-  text-align: center;
-}
-
-/* ============================================================
-   PUZZLE 6 — CLOCK CIPHER
-   ============================================================ */
-.clock-row {
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  margin: 36px auto 0;
-}
-
-.clock-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.clock-label {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  color: var(--text-muted);
+  color: var(--text-primary);
+  font-weight: bold;
   letter-spacing: 2px;
+  min-width: 60px;
+  text-align: left;
+}
+
+.in-word-q {
+  font-size: 24px;
+  color: var(--error);
+}
+
+.in-divider {
+  border-top: 1px solid #222;
+  margin: 12px 0 16px;
+}
+
+.in-example {
+  opacity: 0.8;
+}
+
+.in-question {
+  margin-top: 4px;
 }
 
 /* ============================================================
