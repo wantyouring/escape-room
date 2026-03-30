@@ -655,12 +655,7 @@
   margin-bottom: 2px;
 }
 
-.acrostic-first {
-  color: var(--accent-amber);
-  font-weight: bold;
-  font-size: 16px;
-  text-shadow: 0 0 8px var(--accent-glow);
-}
+/* .acrostic-first removed — all chars same style */
 
 /* ============================================================
    PUZZLE 3 — REDACTED DOCUMENT (legacy, kept for reference)
@@ -991,7 +986,112 @@
 }
 
 /* ============================================================
-   PUZZLE 6 — WORD CHAIN
+   PUZZLE 6 — DICE
+   ============================================================ */
+.dice-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 36px auto 0;
+}
+
+.die {
+  width: 64px;
+  height: 64px;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+}
+
+.die-face {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  padding: 6px;
+  width: 100%;
+  height: 100%;
+}
+
+.die-dot {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.die-dot-on {
+  background: var(--text-primary);
+}
+
+/* ============================================================
+   PUZZLE 8 — FLIP CARD GRID (2x2)
+   ============================================================ */
+.flip-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 36px auto 0;
+  max-width: 260px;
+}
+
+.flip-card {
+  position: relative;
+  height: 80px;
+  cursor: pointer;
+  perspective: 600px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.flip-front,
+.flip-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  backface-visibility: hidden;
+  transition: transform 0.5s ease-in-out;
+}
+
+.flip-front {
+  background: var(--bg-surface);
+  border: 1px solid #2a2a2a;
+  font-family: var(--font-story);
+  font-size: 18px;
+  color: var(--text-primary);
+  transform: rotateY(0deg);
+}
+
+.flip-back {
+  background: #0a0a10;
+  border: 1px solid var(--accent-amber);
+  font-family: var(--font-story);
+  font-size: 28px;
+  color: var(--accent-amber);
+  transform: rotateY(180deg);
+}
+
+.flip-card.flipped .flip-front { transform: rotateY(-180deg); }
+.flip-card.flipped .flip-back  { transform: rotateY(0deg); }
+
+/* ============================================================
+   PUZZLE 10 — MACGUFFIN
+   ============================================================ */
+.macguffin-exit {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ============================================================
+   PUZZLE 6 — WORD CHAIN (legacy)
    ============================================================ */
 .word-chain {
   display: flex;
