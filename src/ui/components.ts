@@ -34,6 +34,12 @@ export function createCodeInput(
     }
   });
 
+  input.addEventListener('blur', () => {
+    if (input.value.length === maxLength) {
+      onSubmit(input.value);
+    }
+  });
+
   wrapper.appendChild(input);
   wrapper.appendChild(label);
   return wrapper;
@@ -65,6 +71,12 @@ export function createTextInput(
 
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && input.value.length > 0) {
+      onSubmit(input.value);
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    if (input.value.length === charCount) {
       onSubmit(input.value);
     }
   });
