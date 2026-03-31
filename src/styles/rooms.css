@@ -1669,3 +1669,153 @@
   border: 1px solid var(--text-muted);
   color: var(--text-secondary);
 }
+
+.continue-btn-tertiary {
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin-top: 0;
+}
+
+/* ============================================================
+   ROOM SELECT
+   ============================================================ */
+.room-select-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 40px 24px;
+  background: var(--bg-primary);
+}
+
+.room-select-title {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+
+.room-select-list {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.room-card {
+  border: 1px solid #222;
+  padding: 24px 20px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.room-card:active {
+  background: var(--bg-surface);
+}
+
+.room-card-locked {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.room-card-done {
+  border-color: #2a2a1a;
+}
+
+.room-card-name {
+  font-family: var(--font-story);
+  font-size: 18px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.room-card-locked .room-card-name {
+  color: var(--text-muted);
+}
+
+.room-card-desc {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.room-card-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 14px;
+  color: var(--accent-amber);
+}
+
+/* ============================================================
+   ROOM 2 PLACEHOLDER
+   ============================================================ */
+.room2-placeholder-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  background: var(--bg-primary);
+}
+
+.room2-placeholder-inner {
+  text-align: center;
+  padding: 40px 24px;
+}
+
+.room2-placeholder-icon {
+  font-size: 40px;
+  margin-bottom: 24px;
+  opacity: 0.4;
+}
+
+.room2-placeholder-title {
+  font-family: var(--font-story);
+  font-size: 22px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.room2-placeholder-desc {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 48px;
+}
+
+.room2-placeholder-back {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* EscapeScene 방 선택 버튼 */
+.room-select-btn {
+  display: block;
+  width: 200px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}

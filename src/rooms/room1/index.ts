@@ -26,6 +26,7 @@ export interface GameState {
   completedPuzzles: string[];
   currentPuzzle: string;
   goToPuzzle: (puzzleId: string) => void;
+  goToRoomSelect: () => void;
 }
 
 let gameState: GameState | null = null;
@@ -48,6 +49,20 @@ function toggleDropdown(anchor: HTMLElement): void {
 
   const dropdown = document.createElement('div');
   dropdown.className = 'puzzle-dropdown';
+
+  // 방 선택 항목 — 항상 상단에 고정
+  const roomItem = document.createElement('div');
+  roomItem.className = 'dropdown-item dropdown-room-select';
+  roomItem.innerHTML = `<span class="dropdown-name">← 방 선택</span>`;
+  roomItem.addEventListener('click', () => {
+    dropdown.remove();
+    gameState!.goToRoomSelect();
+  });
+  dropdown.appendChild(roomItem);
+
+  const divider = document.createElement('div');
+  divider.className = 'dropdown-divider';
+  dropdown.appendChild(divider);
 
   for (let i = 0; i < 10; i++) {
     const id = `puzzle-${i + 1}`;
@@ -721,8 +736,9 @@ export class EscapeScene implements Scene {
   id = 'escape';
   private elapsedMs: number;
   private onRestart: () => void;
-  constructor(elapsedMs: number, onRestart: () => void) {
-    this.elapsedMs = elapsedMs; this.onRestart = onRestart;
+  private onRoomSelect: () => void;
+  constructor(elapsedMs: number, onRestart: () => void, onRoomSelect: () => void) {
+    this.elapsedMs = elapsedMs; this.onRestart = onRestart; this.onRoomSelect = onRoomSelect;
   }
   mount(container: HTMLElement): void {
     const totalSec = Math.floor(this.elapsedMs / 1000);
@@ -738,6 +754,7 @@ export class EscapeScene implements Scene {
           <div class="escape-actions">
             <button class="share-btn">친구에게 공유</button>
             <button class="retry-btn">다시 하기</button>
+            <button class="room-select-btn">방 선택</button>
           </div>
         </div>
       </div>`;
@@ -747,6 +764,7 @@ export class EscapeScene implements Scene {
       else { navigator.clipboard.writeText(`${text}\n${location.href}`); const b = container.querySelector('.share-btn') as HTMLElement; if (b) b.textContent = '복사됨!'; }
     });
     container.querySelector('.retry-btn')?.addEventListener('click', this.onRestart);
+    container.querySelector('.room-select-btn')?.addEventListener('click', this.onRoomSelect);
   }
   teardown(): void {}
 }
@@ -757,10 +775,10 @@ export class EscapeScene implements Scene {
 export class ContinueDialog implements Scene {
   id = 'continue-dialog';
   private puzzleNum: number; private timeStr: string;
-  private onContinue: () => void; private onRestart: () => void;
-  constructor(puzzleNum: number, timeStr: string, onContinue: () => void, onRestart: () => void) {
+  private onContinue: () => void; private onRestart: () => void; private onRoomSelect: () => void;
+  constructor(puzzleNum: number, timeStr: string, onContinue: () => void, onRestart: () => void, onRoomSelect: () => void) {
     this.puzzleNum = puzzleNum; this.timeStr = timeStr;
-    this.onContinue = onContinue; this.onRestart = onRestart;
+    this.onContinue = onContinue; this.onRestart = onRestart; this.onRoomSelect = onRoomSelect;
   }
   mount(container: HTMLElement): void {
     container.innerHTML = `
@@ -770,10 +788,12 @@ export class ContinueDialog implements Scene {
           <p class="continue-info">퍼즐 ${this.puzzleNum}/10 · ${this.timeStr}</p>
           <button class="continue-btn continue-btn-primary">이어하기</button>
           <button class="continue-btn continue-btn-secondary">처음부터</button>
+          <button class="continue-btn continue-btn-tertiary">방 선택</button>
         </div>
       </div>`;
     container.querySelector('.continue-btn-primary')?.addEventListener('click', this.onContinue);
     container.querySelector('.continue-btn-secondary')?.addEventListener('click', this.onRestart);
+    container.querySelector('.continue-btn-tertiary')?.addEventListener('click', this.onRoomSelect);
   }
   teardown(): void {}
 }

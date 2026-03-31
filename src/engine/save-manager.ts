@@ -1,8 +1,11 @@
 /**
  * Save Manager — localStorage 기반 진행 상태 저장
+ *
+ * 키 구조:
+ *   escape-room-{roomId}-save    → 룸별 진행 상태
+ *   escape-room-{roomId}-done    → 룸 클리어 여부
+ *   escape-room-current-room     → 마지막으로 플레이한 룸 ID
  */
-
-const SAVE_KEY = 'escape-room-save';
 
 export interface SaveData {
   currentScene: string;
@@ -11,17 +14,27 @@ export interface SaveData {
   elapsedMs: number;
 }
 
-export function save(data: SaveData): void {
+function saveKey(roomId: string): string {
+  return `escape-room-${roomId}-save`;
+}
+
+function doneKey(roomId: string): string {
+  return `escape-room-${roomId}-done`;
+}
+
+const CURRENT_ROOM_KEY = 'escape-room-current-room';
+
+export function save(data: SaveData, roomId = 'room1'): void {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    localStorage.setItem(saveKey(roomId), JSON.stringify(data));
   } catch {
     // localStorage 미지원 (시크릿 모드 등) — 무시
   }
 }
 
-export function load(): SaveData | null {
+export function load(roomId = 'room1'): SaveData | null {
   try {
-    const raw = localStorage.getItem(SAVE_KEY);
+    const raw = localStorage.getItem(saveKey(roomId));
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (
@@ -39,9 +52,49 @@ export function load(): SaveData | null {
   }
 }
 
-export function clear(): void {
+export function clear(roomId = 'room1'): void {
   try {
-    localStorage.removeItem(SAVE_KEY);
+    localStorage.removeItem(saveKey(roomId));
+  } catch {
+    // 무시
+  }
+}
+
+export function markCompleted(roomId: string): void {
+  try {
+    localStorage.setItem(doneKey(roomId), '1');
+  } catch {
+    // 무시
+  }
+}
+
+export function isCompleted(roomId: string): boolean {
+  try {
+    return localStorage.getItem(doneKey(roomId)) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function getCurrentRoom(): string | null {
+  try {
+    return localStorage.getItem(CURRENT_ROOM_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setCurrentRoom(roomId: string): void {
+  try {
+    localStorage.setItem(CURRENT_ROOM_KEY, roomId);
+  } catch {
+    // 무시
+  }
+}
+
+export function clearCurrentRoom(): void {
+  try {
+    localStorage.removeItem(CURRENT_ROOM_KEY);
   } catch {
     // 무시
   }
